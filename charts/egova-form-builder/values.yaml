@@ -1,0 +1,64 @@
+# Default values for register-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+image:
+  repository: 192.168.101.40:30004/egova/egova-api-builder
+  pullPolicy: Always
+
+config:
+  port: 8788
+
+env:
+  open:
+    TZ: Asia/Shanghai
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://cloud-eureka.egova-cloud:8761/eureka/
+    SPRING_REDIS_HOST: egova-redis.egova
+    SPRING_REDIS_DATABASE: 4
+    SPRING_DATASOURCE_URL: jdbc:mysql://mysql.egova:3306/api?serverTimezone=Asia/Shanghai&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf8
+    SPRING_DATASOURCE_USERNAME: root
+    SPRING_DATASOURCE_PASSWORD: egova
+    OAUTH2SERVER: http://security-server
+    # 构建后端外网地址
+    ESTABLISH_URL: http://www.egova.top:32001/api-server
+    # 网盘sdk
+    PAN_CLIENT_ID: c0380f78-6e1b-4e8a-a81a-7d026a929006
+    PAN_CLIENT_SECRET: f838b2fe8b
+    PAN_CLIENT_ENDPOINT: http://egova.top:32001/pan-server
+    PAN_CLIENT_OAUTH2ENDPOINT: http://egova.top:32001/security-server
+    # onlyoffice外网地址
+    EGOVA_EDITOR_DOCUMENTJSURL: http://egova.top:30013
+
+service:
+  name: api
+  enabled: false
+  type: NodePort
+  port: 8788
+  nodePort: 32011
+
+ingress:
+  enabled: false
+  host: egova.com
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources,such as Minikube. If you do want to specify resources,uncomment the following
+  # lines,adjust them as necessary,and remove the curly braces after 'resources:'.
+  limits:
+    # cpu: 100m
+    memory: 3.5Gi
+  requests:
+    # cpu: 100m
+    memory: 3Gi
+
+persistence:
+  enabled: false
+  existingClaim:
+  subPath:
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+  # subPath:

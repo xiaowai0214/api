@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.egova</groupId>
+        <artifactId>egova-form-builder</artifactId>
+        <version>5.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>api-launch-single</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- project modules -->
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>api-common-liquibase</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-api-rest</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- egova base -->
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-common-liquibase</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-common-base</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-common-rest</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-datasource-rest</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-generic-rest</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-organ-rest</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-security-rest</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-oauth-rest</artifactId>
+            <version>${egova.oauth.version}</version>
+        </dependency>
+
+        <!-- establish -->
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>establish-common-liquibase</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
+
+        <!-- ddcat -->
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>ddcat-common-liquibase</artifactId>
+            <version>${egova.ddcat.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>ddcat-model-rest</artifactId>
+            <version>${egova.ddcat.version}</version>
+        </dependency>
+
+        <!-- project dependency -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
+
+        <!-- test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring.boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>egova</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+                <!-- 将本地lib引入 -->
+                <configuration>
+                    <includeSystemScope>true</includeSystemScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

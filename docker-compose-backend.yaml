@@ -1,0 +1,44 @@
+---
+version: '3.7'
+services:
+  form:
+    # 修改tag
+    image: egova.top:30004/egova/egova-api-builder:202009161526
+    container_name: api
+    volumes:
+      - /egova/docker/volumes/api/tmp:/egova-apps/tmp
+      - /egova/docker/volumes/api/files:/egova-apps/files
+    restart: always
+    ports:
+      - 8788:8788
+    networks:
+      - ingress
+    environment:
+      TZ: Asia/Shanghai
+      # mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/api?serverTimezone=Asia/Shanghai&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false&useUnicode=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: egova@2020!
+      # redis
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_REDIS_PASSWORD: egova
+      SPRING_REDIS_DATABASE: 0
+      ####################### 配置 #######################
+      # 表单服务外网访问地址
+      ESTABLISH_URL: http://www.egova.top:30099
+      ####################### 下面配置网盘服务相关参数（文件上传、预览等） #######################
+      # 网盘sdk
+      PAN_CLIENT_ID: pan
+      PAN_CLIENT_SECRET: pan
+      # 网盘地址
+      PAN_CLIENT_ENDPOINT: http://egova.top:32001/pan-server
+      # 网盘认证地址
+      PAN_CLIENT_OAUTH2ENDPOINT: http://egova.top:32001/security-server
+      # 网盘onlyoffice外网地址
+      EGOVA_EDITOR_DOCUMENTJSURL: http://egova.top:30013
+networks:
+  ## 网络组名称
+  ingress:
+    external:
+      name: egova-network
