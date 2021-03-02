@@ -1,9 +1,9 @@
 package com.egova.api.controller.unity;
 
-import com.egova.api.condition.AppHomeCondition;
-import com.egova.api.entity.AppHome;
-import com.egova.api.facade.AppHomeFacade;
-import com.egova.api.service.AppHomeService;
+import com.egova.api.condition.RequestParamCondition;
+import com.egova.api.entity.RequestParam;
+import com.egova.api.facade.RequestParamFacade;
+import com.egova.api.service.RequestParamService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import com.egova.web.annotation.Api;
@@ -19,45 +19,45 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/app-home")
+@RequestMapping("/unity/request-param")
 @RequiredArgsConstructor
-public class AppHomeController implements AppHomeFacade {
+public class RequestParamController implements RequestParamFacade {
 
-    private final AppHomeService appHomeService;
+    private final RequestParamService requestParamService;
 
     /**
      * 主键获取
      *
      * @param id 主键
-     * @return AppHome
+     * @return RequestParam
      */
     @Api
     @Override
-    public AppHome getById(@PathVariable String id) {
-        return appHomeService.getById(id);
+    public RequestParam seekById(@PathVariable String id) {
+        return requestParamService.seekById(id);
     }
 
     /**
      * 保存
      *
-     * @param appHome App应用
+     * @param entity 
      * @return 主键
      */
     @Api
     @Override
-    public String insert(@RequestBody AppHome appHome) {
-        return appHomeService.insert(appHome);
+    public String insert(@RequestBody RequestParam entity) {
+        return requestParamService.insert(entity);
     }
 
     /**
      * 更新
      *
-     * @param appHome App应用
+     * @param entity 
      */
     @Api
     @Override
-    public void update(@RequestBody AppHome appHome) {
-        appHomeService.update(appHome);
+    public void update(@RequestBody RequestParam entity) {
+        requestParamService.update(entity);
     }
 
     /**
@@ -69,19 +69,18 @@ public class AppHomeController implements AppHomeFacade {
     @Api
     @Override
     public int deleteById(@PathVariable String id) {
-        return appHomeService.deleteById(id);
+        return requestParamService.deleteById(id);
     }
 
     /**
      * 分页查询
      *
-     * @param model 模型
+     * @param model QueryModel
      * @return PageResult
      */
     @Api
-    @PostMapping("/page")
-    public PageResult<AppHome> page(@RequestBody QueryModel<AppHomeCondition> model) {
-        return appHomeService.page(model);
+    public PageResult<RequestParam> page(@RequestBody QueryModel<RequestParamCondition> model) {
+        return requestParamService.page(model);
     }
 
     /**
@@ -94,7 +93,7 @@ public class AppHomeController implements AppHomeFacade {
     @PostMapping("/batch")
     @RequestDecorating(value = "delete")
     public int batchDelete(@RequestBody List<String> ids) {
-        return appHomeService.deleteByIds(ids);
+        return requestParamService.deleteByIds(ids);
     }
 
 }

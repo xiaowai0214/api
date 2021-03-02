@@ -1,11 +1,11 @@
 package com.egova.api.service.impl;
 
+import com.egova.api.condition.HeaderCondition;
+import com.egova.api.domain.HeaderRepository;
+import com.egova.api.entity.Header;
+import com.egova.api.service.HeaderService;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
-import com.egova.api.condition.AppHomeCondition;
-import com.egova.api.domain.AppHomeRepository;
-import com.egova.api.entity.AppHome;
-import com.egova.api.service.AppHomeService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +21,17 @@ import javax.annotation.Priority;
 @Service
 @Priority(5)
 @RequiredArgsConstructor
-public class AppHomeServiceImpl extends TemplateService<AppHome, String> implements AppHomeService {
+public class HeaderServiceImpl extends TemplateService<Header, String> implements HeaderService {
 
-    private final AppHomeRepository appHomeRepository;
+    private final HeaderRepository headerRepository;
 
     @Override
-    protected AbstractRepositoryBase<AppHome, String> getRepository() {
-        return appHomeRepository;
+    protected AbstractRepositoryBase<Header, String> getRepository() {
+        return headerRepository;
     }
 
     @Override
-    public PageResult<AppHome> page(QueryModel<AppHomeCondition> model) {
+    public PageResult<Header> page(QueryModel<HeaderCondition> model) {
         return super.page(model.getCondition(), model.getPaging(), model.getSorts());
     }
 

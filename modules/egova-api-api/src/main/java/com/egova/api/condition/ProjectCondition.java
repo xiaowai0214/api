@@ -14,33 +14,35 @@ import java.sql.Timestamp;
  */
 @Data
 @Condition
-@Display("App应用")
-public class AppHomeCondition implements Serializable {
+@Display("api项目表")
+public class ProjectCondition implements Serializable {
 
     @Display("主键")
     @ConditionOperator(name = "id", operator = ClauseOperator.Equal)
     private String id;
 
     @Display("名称")
-    @ConditionOperator(name = "name", operator = ClauseOperator.Like)
+    @ConditionOperator(name = "name", operator = ClauseOperator.Equal)
     private String name;
 
-    @Display("状态")
-    @ConditionOperator(name = "status", operator = ClauseOperator.Equal)
-    private Integer status;
+    @Display("")
+    @ConditionOperator(name = "description", operator = ClauseOperator.Equal)
+    private String description;
+
+    @Display("类别id")
+    @ConditionOperator(name = "categoryId", operator = ClauseOperator.Equal)
+    private String categoryId;
+
+    @Display("排序")
+    @ConditionOperator(name = "sort", operator = ClauseOperator.Equal)
+    private Integer sort;
 
     @Display("创建人")
     @ConditionOperator(name = "creator", operator = ClauseOperator.Equal)
     private String creator;
 
     @Display("创建时间")
-    @ConditionOperator(name = "createTime", operator = ClauseOperator.GreaterThanEqual)
-    private Timestamp createTimeStart;
-
-    @Display("创建时间")
-    @ConditionOperator(name = "createTime", operator = ClauseOperator.LessThanEqual)
-    private Timestamp createTimeEnd;
-
-
+    @ConditionOperator(name = "createTime", operator = ClauseOperator.Equal)
+    private Timestamp createTime;
 
 }

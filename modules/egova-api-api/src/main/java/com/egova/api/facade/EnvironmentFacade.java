@@ -1,40 +1,40 @@
 package com.egova.api.facade;
 
+import com.egova.api.entity.Environment;
 import com.egova.cloud.FeignClient;
-import com.egova.api.entity.AppHome;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * created by huangkang
  */
-@FeignClient(value = "${service.api-builder:api-builder}", path = "/unity/app-home")
-public interface AppHomeFacade {
+@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/environment")
+public interface EnvironmentFacade {
 
     /**
      * 主键查询
      *
      * @param id 主键
-     * @return AppHome
+     * @return Environment
      */
     @GetMapping(value = "/{id}")
-    AppHome getById(@PathVariable("id") String id);
+    Environment seekById(@PathVariable("id") String id);
 
     /**
      * 保存
      *
-     * @param appHome App应用
+     * @param entity 
      * @return 主键
      */
     @PostMapping
-    String insert(@RequestBody AppHome appHome);
+    String insert(@RequestBody Environment entity);
 
     /**
      * 更新
      *
-     * @param appHome App应用
+     * @param entity 
      */
     @PutMapping
-    void update(@RequestBody AppHome appHome);
+    void update(@RequestBody Environment entity);
 
     /**
      * 主键删除
@@ -43,6 +43,6 @@ public interface AppHomeFacade {
      * @return 影响记录行数
      */
     @DeleteMapping(value = "/{id}")
-    int deleteById(@PathVariable("id")  String id);
+    int deleteById(@PathVariable("id") String id);
 
 }

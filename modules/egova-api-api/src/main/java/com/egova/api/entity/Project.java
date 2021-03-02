@@ -18,12 +18,12 @@ import java.sql.Timestamp;
  */
 @Data
 @Entity
-@Table(name = "frm_app_home")
-@Display("App应用")
+@Table(name = "api_project")
+@Display("api项目表")
 @EqualsAndHashCode(callSuper = true)
-public class AppHome extends BaseEntity {
+public class Project extends BaseEntity {
 
-    public static final String NAME = "AppHome";
+    public static final String NAME = "Project";
 
     @Id
     @Display("主键")
@@ -34,13 +34,17 @@ public class AppHome extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Display("页面结构")
-    @Column(name = "content")
-    private String content;
+    @Display("")
+    @Column(name = "description")
+    private String description;
 
-    @Display("状态")
-    @Column(name = "status")
-    private Integer status;
+    @Display("类别id")
+    @Column(name = "categoryId")
+    private String categoryId;
+
+    @Display("排序")
+    @Column(name = "sort")
+    private Integer sort;
 
     @Display("创建人")
     @Column(name = "creator")
@@ -51,15 +55,5 @@ public class AppHome extends BaseEntity {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Timestamp createTime;
-
-    @Display("修改人")
-    @Column(name = "modifier")
-    private String modifier;
-
-    @Display("修改时间")
-    @Column(name = "modifyTime")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Timestamp modifyTime;
 
 }

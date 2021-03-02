@@ -1,8 +1,8 @@
 package com.egova.api.service;
 
-import com.egova.api.condition.AppHomeCondition;
-import com.egova.api.entity.AppHome;
-import com.egova.api.facade.AppHomeFacade;
+import com.egova.api.condition.RequestParamCondition;
+import com.egova.api.entity.RequestParam;
+import com.egova.api.facade.RequestParamFacade;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * created by huangkang
  */
-public interface AppHomeService extends AppHomeFacade {
+public interface RequestParamService extends RequestParamFacade {
 
     /**
      * 分页查询
@@ -19,7 +19,7 @@ public interface AppHomeService extends AppHomeFacade {
      * @param model QueryModel
      * @return 分页数据
      */
-    PageResult<AppHome> page(QueryModel<AppHomeCondition> model);
+    PageResult<RequestParam> page(QueryModel<RequestParamCondition> model);
 
     /**
      * 主键批量删除

@@ -9,9 +9,12 @@ import lombok.RequiredArgsConstructor;
 @Associative(name = "_${name}", providerClass = CodeTypeProvider.class)
 @Getter
 @RequiredArgsConstructor
-public enum AppPageType implements PropertyDescriptor {
-    Internal("0", "内部"),
-    External("1", "外部");
+public enum RequestMethodType implements PropertyDescriptor {
+    GET("0", "GET"),
+    POST("1", "POST"),
+    PUT("2", "PUT"),
+    DELETE("3", "DELETE"),
+    ;
 
     private final String value;
     private final String text;
