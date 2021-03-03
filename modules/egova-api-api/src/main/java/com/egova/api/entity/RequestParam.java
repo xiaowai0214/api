@@ -1,5 +1,6 @@
 package com.egova.api.entity;
 
+import com.egova.api.enums.RequestParamType;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
 import lombok.Data;
@@ -49,6 +50,6 @@ public class RequestParam extends BaseEntity {
 
     @Display("参数类型【req_query】【req_params】【form-data】")
     @Column(name = "type")
-    private String type;
+    private RequestParamType type;
 
 }
