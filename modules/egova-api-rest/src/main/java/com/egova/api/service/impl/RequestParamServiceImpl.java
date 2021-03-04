@@ -1,11 +1,11 @@
 package com.egova.api.service.impl;
 
+import com.egova.data.service.AbstractRepositoryBase;
+import com.egova.data.service.TemplateService;
 import com.egova.api.condition.RequestParamCondition;
 import com.egova.api.domain.RequestParamRepository;
 import com.egova.api.entity.RequestParam;
 import com.egova.api.service.RequestParamService;
-import com.egova.data.service.AbstractRepositoryBase;
-import com.egova.data.service.TemplateService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.egova.api.service;
 
-import com.egova.api.condition.HeaderCondition;
-import com.egova.api.entity.Header;
-import com.egova.api.facade.HeaderFacade;
+import com.egova.api.condition.RequestHeaderCondition;
+import com.egova.api.entity.RequestHeader;
+import com.egova.api.facade.RequestHeaderFacade;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * created by huangkang
  */
-public interface HeaderService extends HeaderFacade {
+public interface RequestHeaderService extends RequestHeaderFacade {
 
     /**
      * 分页查询
@@ -19,7 +19,7 @@ public interface HeaderService extends HeaderFacade {
      * @param model QueryModel
      * @return 分页数据
      */
-    PageResult<Header> page(QueryModel<HeaderCondition> model);
+    PageResult<RequestHeader> page(QueryModel<RequestHeaderCondition> model);
 
     /**
      * 主键批量删除

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 public enum AuthenticationType implements PropertyDescriptor {
     Api_Key("0", "api_key"),
     Base_Auth("1", "base_auth"),
-    OAuth2("1", "oauth2"),
+    OAuth2("2", "oauth2"),
     ;
 
     private final String value;

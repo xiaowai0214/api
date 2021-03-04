@@ -1,5 +1,7 @@
 package com.egova.api.condition;
 
+import com.egova.api.enums.RequestBodyType;
+import com.egova.api.enums.RequestMethodType;
 import com.egova.model.annotation.Display;
 import com.flagwind.persistent.annotation.Condition;
 import com.flagwind.persistent.annotation.ConditionOperator;
@@ -14,8 +16,8 @@ import java.sql.Timestamp;
  */
 @Data
 @Condition
-@Display("")
-public class ApiCondition implements Serializable {
+@Display("api信息")
+public class InfoCondition implements Serializable {
 
     @Display("主键")
     @ConditionOperator(name = "id", operator = ClauseOperator.Equal)
@@ -35,10 +37,10 @@ public class ApiCondition implements Serializable {
 
     @Display("请求方式")
     @ConditionOperator(name = "method", operator = ClauseOperator.Equal)
-    private String method;
+    private RequestMethodType method;
 
     @Display("请求路径")
-    @ConditionOperator(name = "url", operator = ClauseOperator.Equal)
+    @ConditionOperator(name = "url", operator = ClauseOperator.Like)
     private String url;
 
     @Display("状态")
@@ -47,50 +49,26 @@ public class ApiCondition implements Serializable {
 
     @Display("body参数类型【multipart/form-data 】【json】【】。。。")
     @ConditionOperator(name = "requestBodyType", operator = ClauseOperator.Equal)
-    private String requestBodyType;
-
-    @Display("json类型的body参数")
-    @ConditionOperator(name = "requestBodyJson", operator = ClauseOperator.Equal)
-    private String requestBodyJson;
+    private RequestBodyType requestBodyType;
 
     @Display("文档id")
     @ConditionOperator(name = "documentId", operator = ClauseOperator.Equal)
     private String documentId;
-
-    @Display("响应结果")
-    @ConditionOperator(name = "response", operator = ClauseOperator.Equal)
-    private String response;
-
-    @Display("成功样例")
-    @ConditionOperator(name = "successExample", operator = ClauseOperator.Equal)
-    private String successExample;
-
-    @Display("失败样例")
-    @ConditionOperator(name = "failExample", operator = ClauseOperator.Equal)
-    private String failExample;
 
     @Display("创建人")
     @ConditionOperator(name = "creator", operator = ClauseOperator.Equal)
     private String creator;
 
     @Display("创建时间")
-    @ConditionOperator(name = "createTime", operator = ClauseOperator.Equal)
-    private Timestamp createTime;
+    @ConditionOperator(name = "createTime", operator = ClauseOperator.GreaterThanEqual)
+    private Timestamp startCreateTime;
 
-    @Display("备注")
-    @ConditionOperator(name = "remark", operator = ClauseOperator.Equal)
-    private String remark;
+    @Display("创建时间")
+    @ConditionOperator(name = "createTime", operator = ClauseOperator.LessThanEqual)
+    private Timestamp endCreateTime;
 
-    @Display("前置脚本")
-    @ConditionOperator(name = "preScript", operator = ClauseOperator.Equal)
-    private String preScript;
-
-    @Display("后置脚本")
-    @ConditionOperator(name = "postScript", operator = ClauseOperator.Equal)
-    private String postScript;
-
-    @Display("mock数据")
-    @ConditionOperator(name = "mock", operator = ClauseOperator.Equal)
-    private String mock;
+    @Display("认证")
+    @ConditionOperator(name = "authenticationId", operator = ClauseOperator.Equal)
+    private String authenticationId;
 
 }

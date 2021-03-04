@@ -1,11 +1,11 @@
 package com.egova.api.service.impl;
 
-import com.egova.api.condition.EnvironmentCondition;
-import com.egova.api.domain.EnvironmentRepository;
-import com.egova.api.entity.Environment;
-import com.egova.api.service.EnvironmentService;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
+import com.egova.api.condition.InfoCondition;
+import com.egova.api.domain.InfoRepository;
+import com.egova.api.entity.Info;
+import com.egova.api.service.InfoService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +21,17 @@ import javax.annotation.Priority;
 @Service
 @Priority(5)
 @RequiredArgsConstructor
-public class EnvironmentServiceImpl extends TemplateService<Environment, String> implements EnvironmentService {
+public class InfoServiceImpl extends TemplateService<Info, String> implements InfoService {
 
-    private final EnvironmentRepository environmentRepository;
+    private final InfoRepository infoRepository;
 
     @Override
-    protected AbstractRepositoryBase<Environment, String> getRepository() {
-        return environmentRepository;
+    protected AbstractRepositoryBase<Info, String> getRepository() {
+        return infoRepository;
     }
 
     @Override
-    public PageResult<Environment> page(QueryModel<EnvironmentCondition> model) {
+    public PageResult<Info> page(QueryModel<InfoCondition> model) {
         return super.page(model.getCondition(), model.getPaging(), model.getSorts());
     }
 

@@ -2,10 +2,10 @@ package com.egova.api.controller.unity;
 
 import com.egova.web.annotation.Api;
 import com.egova.web.annotation.RequestDecorating;
-import com.egova.api.condition.AuthenticationCondition;
-import com.egova.api.entity.Authentication;
-import com.egova.api.facade.AuthenticationFacade;
-import com.egova.api.service.AuthenticationService;
+import com.egova.api.condition.InfoCondition;
+import com.egova.api.entity.Info;
+import com.egova.api.facade.InfoFacade;
+import com.egova.api.service.InfoService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;
@@ -23,45 +23,45 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/authentication")
+@RequestMapping("/unity/info")
 @RequiredArgsConstructor
-public class AuthenticationController implements AuthenticationFacade {
+public class InfoController implements InfoFacade {
 
-    private final AuthenticationService authenticationService;
+    private final InfoService infoService;
 
     /**
      * 主键获取
      *
      * @param id 主键
-     * @return Authentication
+     * @return Info
      */
     @Api
     @Override
-    public Authentication seekById(@PathVariable String id) {
-        return authenticationService.seekById(id);
+    public Info seekById(@PathVariable String id) {
+        return infoService.seekById(id);
     }
 
     /**
      * 保存
      *
-     * @param entity api鉴权
+     * @param entity api信息
      * @return 主键
      */
     @Api
     @Override
-    public String insert(@RequestBody Authentication entity) {
-        return authenticationService.insert(entity);
+    public String insert(@RequestBody Info entity) {
+        return infoService.insert(entity);
     }
 
     /**
      * 更新
      *
-     * @param entity api鉴权
+     * @param entity api信息
      */
     @Api
     @Override
-    public void update(@RequestBody Authentication entity) {
-        authenticationService.update(entity);
+    public void update(@RequestBody Info entity) {
+        infoService.update(entity);
     }
 
     /**
@@ -73,7 +73,7 @@ public class AuthenticationController implements AuthenticationFacade {
     @Api
     @Override
     public int deleteById(@PathVariable String id) {
-        return authenticationService.deleteById(id);
+        return infoService.deleteById(id);
     }
 
     /**
@@ -83,8 +83,8 @@ public class AuthenticationController implements AuthenticationFacade {
      * @return PageResult
      */
     @Api
-    public PageResult<Authentication> page(@RequestBody QueryModel<AuthenticationCondition> model) {
-        return authenticationService.page(model);
+    public PageResult<Info> page(@RequestBody QueryModel<InfoCondition> model) {
+        return infoService.page(model);
     }
 
     /**
@@ -97,7 +97,7 @@ public class AuthenticationController implements AuthenticationFacade {
     @PostMapping("/batch")
     @RequestDecorating(value = "delete")
     public int batchDelete(@RequestBody List<String> ids) {
-        return authenticationService.deleteByIds(ids);
+        return infoService.deleteByIds(ids);
     }
 
 }

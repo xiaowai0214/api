@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 @Data
 @Condition
-@Display("")
+@Display("环境变量")
 public class EnvironmentParamCondition implements Serializable {
 
     @Display("主键")
@@ -32,8 +32,8 @@ public class EnvironmentParamCondition implements Serializable {
     @ConditionOperator(name = "remark", operator = ClauseOperator.Equal)
     private String remark;
 
-    @Display("环境id")
-    @ConditionOperator(name = "environmentId", operator = ClauseOperator.Equal)
-    private Integer environmentId;
+    @Display("项目主键")
+    @ConditionOperator(name = "projectId", operator = ClauseOperator.Equal)
+    private String projectId;
 
 }

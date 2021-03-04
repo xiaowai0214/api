@@ -1,7 +1,7 @@
 package com.egova.api.domain;
 
-import com.egova.api.entity.RequestParam;
 import com.egova.data.service.AbstractRepositoryBase;
+import com.egova.api.entity.RequestParam;
 import org.springframework.cache.annotation.CacheConfig;
 
 /**

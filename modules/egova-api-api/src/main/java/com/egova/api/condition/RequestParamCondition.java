@@ -1,5 +1,6 @@
 package com.egova.api.condition;
 
+import com.egova.api.enums.RequestParamType;
 import com.egova.model.annotation.Display;
 import com.flagwind.persistent.annotation.Condition;
 import com.flagwind.persistent.annotation.ConditionOperator;
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 @Condition
-@Display("")
+@Display("api请求参数")
 public class RequestParamCondition implements Serializable {
 
     @Display("主键")
@@ -21,27 +22,28 @@ public class RequestParamCondition implements Serializable {
     private String id;
 
     @Display("参数名")
-    @ConditionOperator(name = "name", operator = ClauseOperator.Equal)
+    @ConditionOperator(name = "name", operator = ClauseOperator.Like)
     private String name;
 
-    @Display("参数值")
-    @ConditionOperator(name = "value", operator = ClauseOperator.Equal)
-    private String value;
+    @Display("参数说明")
+    @ConditionOperator(name = "text", operator = ClauseOperator.Like)
+    private String text;
 
     @Display("参考值")
-    @ConditionOperator(name = "example", operator = ClauseOperator.Equal)
+    @ConditionOperator(name = "example", operator = ClauseOperator.Like)
     private String example;
-
-    @Display("参数说明")
-    @ConditionOperator(name = "description", operator = ClauseOperator.Equal)
-    private String description;
 
     @Display("apiId")
     @ConditionOperator(name = "apiId", operator = ClauseOperator.Equal)
     private String apiId;
 
-    @Display("参数类型【req_query】【req_params】【form-data】")
+    @Display("参数类型【QueryString】【FormData】【Json】")
     @ConditionOperator(name = "type", operator = ClauseOperator.Equal)
-    private String type;
+    private RequestParamType type;
+
+    @Display("值类型")
+    @ConditionOperator(name = "valueType", operator = ClauseOperator.Equal)
+    private Integer valueType;
+
 
 }

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "api_environment_param")
-@Display("")
+@Display("环境变量")
 @EqualsAndHashCode(callSuper = true)
 public class EnvironmentParam extends BaseEntity {
 
@@ -39,8 +39,8 @@ public class EnvironmentParam extends BaseEntity {
     @Column(name = "remark")
     private String remark;
 
-    @Display("环境id")
-    @Column(name = "environmentId")
-    private Integer environmentId;
+    @Display("项目主键")
+    @Column(name = "projectId")
+    private String projectId;
 
 }

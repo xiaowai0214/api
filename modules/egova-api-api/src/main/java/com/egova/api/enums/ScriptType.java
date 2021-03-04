@@ -9,10 +9,9 @@ import lombok.RequiredArgsConstructor;
 @Associative(name = "_${name}", providerClass = CodeTypeProvider.class)
 @Getter
 @RequiredArgsConstructor
-public enum RequestParamType implements PropertyDescriptor {
-    Form("0", "QueryString"),
-    Path("1", "FormData"),
-    Request("2", "Json"),
+public enum ScriptType implements PropertyDescriptor {
+    Groovy("0", "groovy"),
+    Formula("1", "formula"),
     ;
 
     private final String value;

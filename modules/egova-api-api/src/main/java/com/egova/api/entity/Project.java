@@ -34,7 +34,7 @@ public class Project extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Display("")
+    @Display("描述")
     @Column(name = "description")
     private String description;
 

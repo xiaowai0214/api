@@ -1,8 +1,8 @@
 package com.egova.api.service;
 
-import com.egova.api.condition.EnvironmentCondition;
-import com.egova.api.entity.Environment;
-import com.egova.api.facade.EnvironmentFacade;
+import com.egova.api.condition.InfoCondition;
+import com.egova.api.entity.Info;
+import com.egova.api.facade.InfoFacade;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * created by huangkang
  */
-public interface EnvironmentService extends EnvironmentFacade {
+public interface InfoService extends InfoFacade {
 
     /**
      * 分页查询
@@ -19,7 +19,7 @@ public interface EnvironmentService extends EnvironmentFacade {
      * @param model QueryModel
      * @return 分页数据
      */
-    PageResult<Environment> page(QueryModel<EnvironmentCondition> model);
+    PageResult<Info> page(QueryModel<InfoCondition> model);
 
     /**
      * 主键批量删除

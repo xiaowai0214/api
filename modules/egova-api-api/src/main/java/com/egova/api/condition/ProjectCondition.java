@@ -22,12 +22,8 @@ public class ProjectCondition implements Serializable {
     private String id;
 
     @Display("名称")
-    @ConditionOperator(name = "name", operator = ClauseOperator.Equal)
+    @ConditionOperator(name = "name", operator = ClauseOperator.Like)
     private String name;
-
-    @Display("")
-    @ConditionOperator(name = "description", operator = ClauseOperator.Equal)
-    private String description;
 
     @Display("排序")
     @ConditionOperator(name = "sort", operator = ClauseOperator.Equal)
@@ -36,9 +32,5 @@ public class ProjectCondition implements Serializable {
     @Display("创建人")
     @ConditionOperator(name = "creator", operator = ClauseOperator.Equal)
     private String creator;
-
-    @Display("创建时间")
-    @ConditionOperator(name = "createTime", operator = ClauseOperator.Equal)
-    private Timestamp createTime;
 
 }

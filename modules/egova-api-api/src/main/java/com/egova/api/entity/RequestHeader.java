@@ -1,5 +1,6 @@
 package com.egova.api.entity;
 
+import com.egova.api.enums.RequestScope;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
 import lombok.Data;
@@ -15,12 +16,12 @@ import javax.persistence.Table;
  */
 @Data
 @Entity
-@Table(name = "api_header")
+@Table(name = "api_request_header")
 @Display("api头信息")
 @EqualsAndHashCode(callSuper = true)
-public class Header extends BaseEntity {
+public class RequestHeader extends BaseEntity {
 
-    public static final String NAME = "Header";
+    public static final String NAME = "RequestHeader";
 
     @Id
     @Display("主键")
@@ -39,12 +40,12 @@ public class Header extends BaseEntity {
     @Column(name = "required")
     private Integer required;
 
-    @Display("【apiId】【environmentId】")
+    @Display("【apiId】【projectId】")
     @Column(name = "belongId")
     private String belongId;
 
     @Display("范围【全局 global, 适用于定义全局环境的头信息】，【单个api】")
     @Column(name = "scope")
-    private String scope;
+    private RequestScope scope;
 
 }

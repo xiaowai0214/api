@@ -1,5 +1,6 @@
 package com.egova.api.entity;
 
+import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestMethodType;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
@@ -19,12 +20,12 @@ import java.sql.Timestamp;
  */
 @Data
 @Entity
-@Table(name = "api_api")
-@Display("")
+@Table(name = "api_info")
+@Display("api信息")
 @EqualsAndHashCode(callSuper = true)
-public class Api extends BaseEntity {
+public class Info extends BaseEntity {
 
-    public static final String NAME = "Api";
+    public static final String NAME = "Info";
 
     @Id
     @Display("主键")
@@ -57,27 +58,11 @@ public class Api extends BaseEntity {
 
     @Display("body参数类型【multipart/form-data 】【json】【】。。。")
     @Column(name = "requestBodyType")
-    private String requestBodyType;
-
-    @Display("json类型的body参数")
-    @Column(name = "requestBodyJson")
-    private String requestBodyJson;
+    private RequestBodyType requestBodyType;
 
     @Display("文档id")
     @Column(name = "documentId")
     private String documentId;
-
-    @Display("响应结果")
-    @Column(name = "response")
-    private String response;
-
-    @Display("成功样例")
-    @Column(name = "successExample")
-    private String successExample;
-
-    @Display("失败样例")
-    @Column(name = "failExample")
-    private String failExample;
 
     @Display("创建人")
     @Column(name = "creator")
@@ -94,15 +79,15 @@ public class Api extends BaseEntity {
     private String remark;
 
     @Display("前置脚本")
-    @Column(name = "preScript")
-    private String preScript;
+    @Column(name = "previousScript")
+    private String previousScript;
 
     @Display("后置脚本")
     @Column(name = "postScript")
     private String postScript;
 
-    @Display("mock数据")
-    @Column(name = "mock")
-    private String mock;
+    @Display("认证")
+    @Column(name = "authenticationId")
+    private String authenticationId;
 
 }

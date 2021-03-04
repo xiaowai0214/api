@@ -127,7 +127,7 @@
         <module>modules/egova-api-api</module>
         <module>modules/egova-api-rest</module>
         <module>modules/api-launch-cloud</module>
-        <!--<module>modules/api-launch-single</module>-->
+        <module>modules/api-launch-single</module>
     </modules>
 
 </project>

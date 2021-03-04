@@ -1,5 +1,6 @@
 package com.egova.api.condition;
 
+import com.egova.api.enums.RequestScope;
 import com.egova.model.annotation.Display;
 import com.flagwind.persistent.annotation.Condition;
 import com.flagwind.persistent.annotation.ConditionOperator;
@@ -14,7 +15,7 @@ import java.io.Serializable;
 @Data
 @Condition
 @Display("api头信息")
-public class HeaderCondition implements Serializable {
+public class RequestHeaderCondition implements Serializable {
 
     @Display("主键")
     @ConditionOperator(name = "id", operator = ClauseOperator.Equal)
@@ -32,12 +33,12 @@ public class HeaderCondition implements Serializable {
     @ConditionOperator(name = "required", operator = ClauseOperator.Equal)
     private Integer required;
 
-    @Display("【apiId】【environmentId】")
+    @Display("【apiId】【projectId】")
     @ConditionOperator(name = "belongId", operator = ClauseOperator.Equal)
     private String belongId;
 
     @Display("范围【全局 global, 适用于定义全局环境的头信息】，【单个api】")
     @ConditionOperator(name = "scope", operator = ClauseOperator.Equal)
-    private String scope;
+    private RequestScope scope;
 
 }

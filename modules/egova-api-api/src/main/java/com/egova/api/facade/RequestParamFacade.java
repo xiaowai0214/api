@@ -1,8 +1,13 @@
 package com.egova.api.facade;
 
-import com.egova.api.entity.RequestParam;
 import com.egova.cloud.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import com.egova.api.entity.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * created by huangkang
@@ -22,7 +27,7 @@ public interface RequestParamFacade {
     /**
      * 保存
      *
-     * @param entity 
+     * @param entity api请求参数
      * @return 主键
      */
     @PostMapping
@@ -31,7 +36,7 @@ public interface RequestParamFacade {
     /**
      * 更新
      *
-     * @param entity 
+     * @param entity api请求参数
      */
     @PutMapping
     void update(@RequestBody RequestParam entity);

@@ -1,7 +1,7 @@
 package com.egova.api.facade;
 
 import com.egova.cloud.FeignClient;
-import com.egova.api.entity.Project;
+import com.egova.api.entity.EventScript;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,34 +12,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * created by huangkang
  */
-@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/project")
-public interface ProjectFacade {
+@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/event-script")
+public interface EventScriptFacade {
 
     /**
      * 主键查询
      *
      * @param id 主键
-     * @return Project
+     * @return EventScript
      */
     @GetMapping(value = "/{id}")
-    Project seekById(@PathVariable("id") String id);
+    EventScript seekById(@PathVariable("id") String id);
 
     /**
      * 保存
      *
-     * @param entity api项目表
+     * @param entity 事件脚本
      * @return 主键
      */
     @PostMapping
-    String insert(@RequestBody Project entity);
+    String insert(@RequestBody EventScript entity);
 
     /**
      * 更新
      *
-     * @param entity api项目表
+     * @param entity 事件脚本
      */
     @PutMapping
-    void update(@RequestBody Project entity);
+    void update(@RequestBody EventScript entity);
 
     /**
      * 主键删除

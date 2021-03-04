@@ -1,8 +1,8 @@
 package com.egova.api.service;
 
-import com.egova.api.condition.ApiCondition;
-import com.egova.api.entity.Api;
-import com.egova.api.facade.ApiFacade;
+import com.egova.api.condition.EventScriptCondition;
+import com.egova.api.entity.EventScript;
+import com.egova.api.facade.EventScriptFacade;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * created by huangkang
  */
-public interface ApiService extends ApiFacade {
+public interface EventScriptService extends EventScriptFacade {
 
     /**
      * 分页查询
@@ -19,7 +19,7 @@ public interface ApiService extends ApiFacade {
      * @param model QueryModel
      * @return 分页数据
      */
-    PageResult<Api> page(QueryModel<ApiCondition> model);
+    PageResult<EventScript> page(QueryModel<EventScriptCondition> model);
 
     /**
      * 主键批量删除

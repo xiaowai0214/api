@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Data
 @Entity
 @Table(name = "api_request_param")
-@Display("")
+@Display("api请求参数")
 @EqualsAndHashCode(callSuper = true)
 public class RequestParam extends BaseEntity {
 
@@ -32,24 +32,28 @@ public class RequestParam extends BaseEntity {
     @Column(name = "name")
     private String name;
 
-    @Display("参数值")
-    @Column(name = "value")
-    private String value;
+    @Display("参数说明")
+    @Column(name = "text")
+    private String text;
 
     @Display("参考值")
     @Column(name = "example")
     private String example;
 
-    @Display("参数说明")
-    @Column(name = "description")
-    private String description;
-
     @Display("apiId")
     @Column(name = "apiId")
     private String apiId;
 
-    @Display("参数类型【req_query】【req_params】【form-data】")
+    @Display("参数类型【QueryString】【FormData】【Json】")
     @Column(name = "type")
     private RequestParamType type;
+
+    @Display("值类型")
+    @Column(name = "valueType")
+    private Integer valueType;
+
+    @Display("值内容")
+    @Column(name = "valueContent")
+    private String valueContent;
 
 }

@@ -1,11 +1,11 @@
 package com.egova.api.service.impl;
 
-import com.egova.api.condition.HeaderCondition;
-import com.egova.api.domain.HeaderRepository;
-import com.egova.api.entity.Header;
-import com.egova.api.service.HeaderService;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
+import com.egova.api.condition.EventScriptCondition;
+import com.egova.api.domain.EventScriptRepository;
+import com.egova.api.entity.EventScript;
+import com.egova.api.service.EventScriptService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +21,17 @@ import javax.annotation.Priority;
 @Service
 @Priority(5)
 @RequiredArgsConstructor
-public class HeaderServiceImpl extends TemplateService<Header, String> implements HeaderService {
+public class EventScriptServiceImpl extends TemplateService<EventScript, String> implements EventScriptService {
 
-    private final HeaderRepository headerRepository;
+    private final EventScriptRepository eventScriptRepository;
 
     @Override
-    protected AbstractRepositoryBase<Header, String> getRepository() {
-        return headerRepository;
+    protected AbstractRepositoryBase<EventScript, String> getRepository() {
+        return eventScriptRepository;
     }
 
     @Override
-    public PageResult<Header> page(QueryModel<HeaderCondition> model) {
+    public PageResult<EventScript> page(QueryModel<EventScriptCondition> model) {
         return super.page(model.getCondition(), model.getPaging(), model.getSorts());
     }
 
