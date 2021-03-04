@@ -1,13 +1,13 @@
 package com.egova.api.facade;
 
+import com.egova.api.model.ApiInfoModel;
 import com.egova.cloud.FeignClient;
 import com.egova.api.entity.Info;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.egova.entity.Category;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * created by huangkang
@@ -49,5 +49,34 @@ public interface InfoFacade {
      */
     @DeleteMapping(value = "/{id}")
     int deleteById(@PathVariable("id") String id);
+
+    /**
+     * 主键删除
+     *
+     * @param categoryId
+     * @param projectId
+     * @return List<Info>
+     */
+    @GetMapping(value = "/tree/{projectId}")
+    List<Category> tree(@RequestParam(value = "categoryId", required = false) String categoryId, @PathVariable("projectId") String projectId);
+
+    /**
+     * 修改
+     *
+     * @param id
+     * @param map
+     * @return 主键
+     */
+    @PostMapping("/modify/{id}")
+    void modify(@PathVariable("id") String id , @RequestBody HashMap<String,Object> map);
+
+
+    /**
+     * 更新
+     *
+     * @param apiInfoModel api信息
+     */
+    @PutMapping
+    void update(@RequestBody ApiInfoModel apiInfoModel);
 
 }

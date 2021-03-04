@@ -1,5 +1,7 @@
 package com.egova.api.controller.unity;
 
+import com.egova.api.model.ApiInfoModel;
+import com.egova.entity.Category;
 import com.egova.web.annotation.Api;
 import com.egova.web.annotation.RequestDecorating;
 import com.egova.api.condition.InfoCondition;
@@ -10,12 +12,9 @@ import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -100,4 +99,21 @@ public class InfoController implements InfoFacade {
         return infoService.deleteByIds(ids);
     }
 
+    @Api
+    @Override
+    public List<Category> tree(@RequestParam String categoryId, @PathVariable String projectId) {
+        return infoService.tree(categoryId,projectId);
+    }
+
+    @Api
+    @Override
+    public void modify(@PathVariable String id, HashMap<String, Object> map) {
+        infoService.modify(id,map);
+    }
+
+    @Api
+    @Override
+    public void update(ApiInfoModel apiInfoModel) {
+        infoService.update(apiInfoModel);
+    }
 }

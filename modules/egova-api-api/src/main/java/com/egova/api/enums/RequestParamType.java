@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum RequestParamType implements PropertyDescriptor {
-    Form("0", "QueryString"),
-    Path("1", "FormData"),
-    Request("2", "Json"),
+    QueryString("0", "QueryString"),
+    FormData("1", "FormData"),
+    Json("2", "Json"),
     ;
 
     private final String value;

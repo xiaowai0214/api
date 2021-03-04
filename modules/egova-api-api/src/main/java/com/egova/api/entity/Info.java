@@ -9,10 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -89,5 +86,8 @@ public class Info extends BaseEntity {
     @Display("认证")
     @Column(name = "authenticationId")
     private String authenticationId;
+
+    @Transient
+    private String json;
 
 }
