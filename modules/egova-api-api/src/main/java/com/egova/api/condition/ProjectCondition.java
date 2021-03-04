@@ -29,10 +29,6 @@ public class ProjectCondition implements Serializable {
     @ConditionOperator(name = "description", operator = ClauseOperator.Equal)
     private String description;
 
-    @Display("类别id")
-    @ConditionOperator(name = "categoryId", operator = ClauseOperator.Equal)
-    private String categoryId;
-
     @Display("排序")
     @ConditionOperator(name = "sort", operator = ClauseOperator.Equal)
     private Integer sort;

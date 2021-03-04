@@ -1,6 +1,7 @@
 package com.egova.api.controller.unity;
 
 import com.egova.api.condition.ApiCondition;
+import com.egova.api.entity.Api;
 import com.egova.api.facade.ApiFacade;
 import com.egova.api.service.ApiService;
 import com.egova.model.PageResult;
@@ -29,7 +30,7 @@ public class ApiController implements ApiFacade {
      * @param id 主键
      * @return Api
      */
-    @Api
+    @com.egova.web.annotation.Api
     @Override
     public Api seekById(@PathVariable String id) {
         return apiService.seekById(id);
@@ -41,7 +42,7 @@ public class ApiController implements ApiFacade {
      * @param entity 
      * @return 主键
      */
-    @Api
+    @com.egova.web.annotation.Api
     @Override
     public String insert(@RequestBody Api entity) {
         return apiService.insert(entity);
@@ -52,7 +53,7 @@ public class ApiController implements ApiFacade {
      *
      * @param entity 
      */
-    @Api
+    @com.egova.web.annotation.Api
     @Override
     public void update(@RequestBody Api entity) {
         apiService.update(entity);
@@ -64,7 +65,7 @@ public class ApiController implements ApiFacade {
      * @param id 主键
      * @return 影响记录行数
      */
-    @Api
+    @com.egova.web.annotation.Api
     @Override
     public int deleteById(@PathVariable String id) {
         return apiService.deleteById(id);
@@ -76,7 +77,7 @@ public class ApiController implements ApiFacade {
      * @param model QueryModel
      * @return PageResult
      */
-    @Api
+    @com.egova.web.annotation.Api
     public PageResult<Api> page(@RequestBody QueryModel<ApiCondition> model) {
         return apiService.page(model);
     }
@@ -87,7 +88,7 @@ public class ApiController implements ApiFacade {
      * @param ids 主键列表
      * @return 影响记录行数
      */
-    @Api
+    @com.egova.web.annotation.Api
     @PostMapping("/batch")
     @RequestDecorating(value = "delete")
     public int batchDelete(@RequestBody List<String> ids) {

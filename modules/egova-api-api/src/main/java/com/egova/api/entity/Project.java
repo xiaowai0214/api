@@ -38,10 +38,6 @@ public class Project extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Display("类别id")
-    @Column(name = "categoryId")
-    private String categoryId;
-
     @Display("排序")
     @Column(name = "sort")
     private Integer sort;
