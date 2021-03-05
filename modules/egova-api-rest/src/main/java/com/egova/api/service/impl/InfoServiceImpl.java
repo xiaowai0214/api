@@ -3,6 +3,7 @@ package com.egova.api.service.impl;
 import com.egova.api.domain.*;
 import com.egova.api.entity.Authentication;
 import com.egova.api.entity.RequestParam;
+import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
 import com.egova.api.enums.RequestScope;
 import com.egova.api.model.ApiInfoModel;
@@ -94,7 +95,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         return tree;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {Exception.class})
     @Override
     public void update(ApiInfoModel apiInfoModel) {
         Optional.ofNullable(apiInfoModel.getInfo().getId()).orElseThrow(()-> ExceptionUtils.api("更新时apiId不能为空"));
@@ -155,21 +156,51 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         Info info = apiInfoModel.getInfo();
         switch (info.getMethod()){
             case GET:
-                if (!CollectionUtils.isEmpty(apiInfoModel.getRequestParams())){
-                    apiInfoModel.getRequestParams().forEach(p-> {
-                        p.setApiId(apiInfoModel.getInfo().getId());
-                        p.setType(RequestParamType.QueryString);
-                        p.setId(UUID.randomUUID().toString());
-                    });
-                    requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
-                }
+            case DELETE:
+                //GET 默认只有queryString 参数
+                saveQueryStringParams(apiInfoModel);
                 break;
             case POST:
-                break;
             case PUT:
+                saveQueryStringParams(apiInfoModel);
+                if (info.getRequestBodyType() == RequestBodyType.Form){
+                    saveFormDataParams(apiInfoModel);
+                }else if (info.getRequestBodyType() == RequestBodyType.Json){
+                    saveJsonParams(apiInfoModel);
+                }
                 break;
-            case DELETE:
-                break;
+        }
+    }
+
+    private void saveQueryStringParams(ApiInfoModel apiInfoModel){
+        if (!CollectionUtils.isEmpty(apiInfoModel.getRequestParams())){
+            apiInfoModel.getRequestParams()
+                    .stream().filter(requestParam -> requestParam.getType() == RequestParamType.QueryString)
+                    .forEach(p-> {
+                        p.setApiId(apiInfoModel.getInfo().getId());
+                        p.setId(UUID.randomUUID().toString());
+                    });
+            requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
+        }
+    }
+
+    private void saveFormDataParams(ApiInfoModel apiInfoModel){
+        if (!CollectionUtils.isEmpty(apiInfoModel.getRequestParams())){
+            apiInfoModel.getRequestParams()
+                    .stream().filter(requestParam -> requestParam.getType() == RequestParamType.FormData)
+                    .forEach(p-> {
+                        p.setApiId(apiInfoModel.getInfo().getId());
+                        p.setId(UUID.randomUUID().toString());
+                    });
+            requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
+        }
+    }
+
+    private void saveJsonParams(ApiInfoModel apiInfoModel){
+        if (!StringUtils.isEmpty(apiInfoModel.getJson())){
+            List<RequestParam> jsonParams = new ArrayList<>();
+            //todo json 打平
+            requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
         }
     }
 }

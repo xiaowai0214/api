@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * created by huangkang
  */
-@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/environment-param")
+@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/api/environment-param")
 public interface EnvironmentParamFacade {
 
     /**

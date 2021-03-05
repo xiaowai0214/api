@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * created by huangkang
  */
-@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/request-header")
+@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/api/request-header")
 public interface RequestHeaderFacade {
 
     /**

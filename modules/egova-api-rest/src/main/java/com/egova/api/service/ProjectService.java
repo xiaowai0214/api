@@ -29,4 +29,6 @@ public interface ProjectService extends ProjectFacade {
      */
     int deleteByIds(List<String> ids);
 
+    List<Project> query(ProjectCondition condition);
+
 }

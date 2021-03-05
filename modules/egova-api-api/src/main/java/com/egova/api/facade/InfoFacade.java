@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * created by huangkang
  */
-@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/info")
+@FeignClient(value = "${service.egova-api:egova-api}", path = "/unity/api/info")
 public interface InfoFacade {
 
     /**
@@ -76,7 +76,7 @@ public interface InfoFacade {
      *
      * @param apiInfoModel api信息
      */
-    @PutMapping
+    @PutMapping("/save/whole")
     void update(@RequestBody ApiInfoModel apiInfoModel);
 
 }

@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/info")
+@RequestMapping("/unity/api/info")
 @RequiredArgsConstructor
 public class InfoController implements InfoFacade {
 

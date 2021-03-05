@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/request-param")
+@RequestMapping("/unity/api/request-param")
 @RequiredArgsConstructor
 public class RequestParamController implements RequestParamFacade {
 

@@ -10,6 +10,11 @@ public class ApiInfoModel {
 
     private Info info;
 
+    /*
+     * json格式参数
+    */
+    private String json;
+
     private List<RequestParam> requestParams;
 
     private List<RequestHeader> requestHeaders;

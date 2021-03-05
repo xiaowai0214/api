@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/event-script")
+@RequestMapping("/unity/api/event-script")
 @RequiredArgsConstructor
 public class EventScriptController implements EventScriptFacade {
 

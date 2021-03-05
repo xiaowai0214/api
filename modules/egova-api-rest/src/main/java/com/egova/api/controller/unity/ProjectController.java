@@ -1,20 +1,16 @@
 package com.egova.api.controller.unity;
 
-import com.egova.web.annotation.Api;
-import com.egova.web.annotation.RequestDecorating;
 import com.egova.api.condition.ProjectCondition;
 import com.egova.api.entity.Project;
 import com.egova.api.facade.ProjectFacade;
 import com.egova.api.service.ProjectService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
+import com.egova.web.annotation.Api;
+import com.egova.web.annotation.RequestDecorating;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +19,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/project")
+@RequestMapping("/unity/api/project")
 @RequiredArgsConstructor
 public class ProjectController implements ProjectFacade {
 
@@ -83,8 +79,21 @@ public class ProjectController implements ProjectFacade {
      * @return PageResult
      */
     @Api
+    @PostMapping("/page")
     public PageResult<Project> page(@RequestBody QueryModel<ProjectCondition> model) {
         return projectService.page(model);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param condition ProjectCondition
+     * @return List
+     */
+    @Api
+    @PostMapping("/list")
+    public List<Project> query(@RequestBody ProjectCondition condition) {
+        return projectService.query(condition);
     }
 
     /**

@@ -87,7 +87,7 @@ public class Info extends BaseEntity {
     @Column(name = "authenticationId")
     private String authenticationId;
 
-    @Transient
-    private String json;
+//    @Transient
+//    private String json;
 
 }

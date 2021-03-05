@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/authentication")
+@RequestMapping("/unity/api/authentication")
 @RequiredArgsConstructor
 public class AuthenticationController implements AuthenticationFacade {
 

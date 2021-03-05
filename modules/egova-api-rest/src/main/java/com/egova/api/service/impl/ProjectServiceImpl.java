@@ -8,11 +8,16 @@ import com.egova.api.entity.Project;
 import com.egova.api.service.ProjectService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
+import com.egova.security.UserContext;
+import com.flagwind.persistent.model.Paging;
+import com.flagwind.persistent.model.Sorting;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Priority;
+import java.sql.Timestamp;
+import java.util.List;
 
 /**
  * created by huangkang
@@ -32,7 +37,24 @@ public class ProjectServiceImpl extends TemplateService<Project, String> impleme
 
     @Override
     public PageResult<Project> page(QueryModel<ProjectCondition> model) {
+        if (model.getPaging() == null){
+            model.setPaging(new Paging(1L,10L));
+        }
+        if (model.getSorts() == null){
+            model.setSorts(new Sorting[]{Sorting.descending("createTime")});
+        }
         return super.page(model.getCondition(), model.getPaging(), model.getSorts());
     }
 
+    @Override
+    public List<Project> query(ProjectCondition condition) {
+        return super.query(condition,new Sorting[]{Sorting.descending("createTime")});
+    }
+
+    @Override
+    public String insert(Project entity) {
+        entity.setCreator(UserContext.username());
+        entity.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        return super.insert(entity);
+    }
 }

@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/environment-param")
+@RequestMapping("/unity/api/environment-param")
 @RequiredArgsConstructor
 public class EnvironmentParamController implements EnvironmentParamFacade {
 

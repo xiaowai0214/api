@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/unity/request-header")
+@RequestMapping("/unity/api/request-header")
 @RequiredArgsConstructor
 public class RequestHeaderController implements RequestHeaderFacade {
 
