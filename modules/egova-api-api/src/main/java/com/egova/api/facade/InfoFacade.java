@@ -76,7 +76,7 @@ public interface InfoFacade {
      *
      * @param apiInfoModel api信息
      */
-    @PutMapping("/save/whole")
+    @PostMapping("/save/whole")
     void update(@RequestBody ApiInfoModel apiInfoModel);
 
 }

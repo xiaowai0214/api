@@ -54,7 +54,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         Map<String, Object> queryParamMap = new HashMap<>();
         Map<String, Object> formParamMap = new HashMap<>();
         List<Map<String, Object>> queryParams = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(model.getRequestHeaders())) {
+        if (!CollectionUtils.isEmpty(model.getRequestParams())) {
             model.getRequestParams().stream().filter(p -> p.getType() == RequestParamType.QueryString)
                     .forEach(requestParam -> {
                         queryParamMap.put(requestParam.getName(), requestParam.getValueContent());

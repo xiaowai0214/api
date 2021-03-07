@@ -38,7 +38,7 @@ public class RequestHeader extends BaseEntity {
 
     @Display("必填")
     @Column(name = "required")
-    private Integer required;
+    private boolean required;
 
     @Display("【apiId】【projectId】")
     @Column(name = "belongId")

@@ -113,7 +113,7 @@ public class InfoController implements InfoFacade {
 
     @Api
     @Override
-    public void update(ApiInfoModel apiInfoModel) {
+    public void update(@RequestBody ApiInfoModel apiInfoModel) {
         infoService.update(apiInfoModel);
     }
 }

@@ -1,18 +1,17 @@
 package com.egova.api.service.impl;
 
+import com.egova.api.condition.InfoCondition;
 import com.egova.api.domain.*;
-import com.egova.api.entity.Authentication;
+import com.egova.api.entity.Info;
 import com.egova.api.entity.RequestParam;
 import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
 import com.egova.api.enums.RequestScope;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.api.service.BaseMicroServiceWrapper;
+import com.egova.api.service.InfoService;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
-import com.egova.api.condition.InfoCondition;
-import com.egova.api.entity.Info;
-import com.egova.api.service.InfoService;
 import com.egova.entity.Category;
 import com.egova.exception.ExceptionUtils;
 import com.egova.model.PageResult;
@@ -24,8 +23,6 @@ import com.flagwind.persistent.model.SingleClause;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.reflection.ExceptionUtil;
-import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -99,6 +96,9 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     @Override
     public void update(ApiInfoModel apiInfoModel) {
         Optional.ofNullable(apiInfoModel.getInfo().getId()).orElseThrow(()-> ExceptionUtils.api("更新时apiId不能为空"));
+        //0. api
+        infoRepository.update(apiInfoModel.getInfo());
+
         //1. 参数
         saveParams(apiInfoModel);
 
@@ -173,26 +173,29 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     private void saveQueryStringParams(ApiInfoModel apiInfoModel){
-        if (!CollectionUtils.isEmpty(apiInfoModel.getRequestParams())){
-            apiInfoModel.getRequestParams()
-                    .stream().filter(requestParam -> requestParam.getType() == RequestParamType.QueryString)
+        List<RequestParam> qureyStrings = apiInfoModel.getRequestParams()
+                .stream().filter(requestParam -> requestParam.getType() == RequestParamType.QueryString)
+                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(qureyStrings)){
+            qureyStrings
                     .forEach(p-> {
                         p.setApiId(apiInfoModel.getInfo().getId());
                         p.setId(UUID.randomUUID().toString());
                     });
-            requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
+            requestParamRepository.insertList(qureyStrings);
         }
     }
 
     private void saveFormDataParams(ApiInfoModel apiInfoModel){
-        if (!CollectionUtils.isEmpty(apiInfoModel.getRequestParams())){
-            apiInfoModel.getRequestParams()
-                    .stream().filter(requestParam -> requestParam.getType() == RequestParamType.FormData)
-                    .forEach(p-> {
+        List<RequestParam> formParams = apiInfoModel.getRequestParams()
+                .stream().filter(requestParam -> requestParam.getType() == RequestParamType.FormData)
+                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(formParams)){
+            formParams.forEach(p-> {
                         p.setApiId(apiInfoModel.getInfo().getId());
                         p.setId(UUID.randomUUID().toString());
                     });
-            requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
+            requestParamRepository.insertList(formParams);
         }
     }
 
@@ -200,7 +203,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         if (!StringUtils.isEmpty(apiInfoModel.getJson())){
             List<RequestParam> jsonParams = new ArrayList<>();
             //todo json 打平
-            requestHeaderRepository.insertList(apiInfoModel.getRequestHeaders());
+            requestParamRepository.insertList(apiInfoModel.getRequestParams());
         }
     }
 }
