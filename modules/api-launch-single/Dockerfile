@@ -11,6 +11,6 @@ WORKDIR /egova-apps
 RUN mkdir /egova-apps/tmp
 RUN mkdir /egova-apps/files
 
-EXPOSE 8788
+EXPOSE 8787
 
 ENTRYPOINT ["java", "-Djava.awt.headless=true", "-jar", "-Dspring.config.location=application.properties", "/egova-apps/egova.jar"]

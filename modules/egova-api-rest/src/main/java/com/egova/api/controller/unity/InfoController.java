@@ -101,7 +101,7 @@ public class InfoController implements InfoFacade {
 
     @Api
     @Override
-    public List<Category> tree(@RequestParam String categoryId, @PathVariable String projectId) {
+    public List<Category> tree(@RequestParam(required = false) String categoryId, @PathVariable String projectId) {
         return infoService.tree(categoryId,projectId);
     }
 

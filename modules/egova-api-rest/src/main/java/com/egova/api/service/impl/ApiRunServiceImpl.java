@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -125,7 +124,9 @@ public class ApiRunServiceImpl implements ApiRunService {
             List<NameValuePair> formParams = new ArrayList<NameValuePair>();
             formParamMap.forEach((k, v) -> formParams.add(new BasicNameValuePair(k, v.toString())));
             try {
-                httpEntity.setEntity(new UrlEncodedFormEntity(formParams, "UTF-8"));
+//                httpEntity.setEntity(new UrlEncodedFormEntity(formParams, "UTF-8"));
+                httpEntity.setEntity(new StringEntity(JSON.toJSONString(formParamMap)));
+
             } catch (UnsupportedEncodingException e) {
                 log.error(e.getMessage(), e);
             }
