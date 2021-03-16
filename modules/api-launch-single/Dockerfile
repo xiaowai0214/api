@@ -4,8 +4,8 @@ RUN mkdir /egova-apps
 
 COPY target/egova.jar /egova-apps
 COPY src/main/resources/application-docker.properties /egova-apps/application.properties
-COPY src/main/resources/keystore.p12 /egova-apps/keystore.p12
-COPY src/main/resources/server.keystore /egova-apps/server.keystore
+# COPY src/main/resources/keystore.p12 /egova-apps/keystore.p12
+# COPY src/main/resources/server.keystore /egova-apps/server.keystore
 
 WORKDIR /egova-apps
 RUN mkdir /egova-apps/tmp
