@@ -8,7 +8,7 @@ image:
   pullPolicy: Always
 
 config:
-  port: 8788
+  port: 8787
 
 env:
   open:
@@ -34,7 +34,7 @@ service:
   name: egova-api
   enabled: false
   type: NodePort
-  port: 8788
+  port: 8787
   nodePort: 32011
 
 ingress:
