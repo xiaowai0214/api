@@ -116,4 +116,10 @@ public class InfoController implements InfoFacade {
     public void update(@RequestBody ApiInfoModel apiInfoModel) {
         infoService.update(apiInfoModel);
     }
+
+    @Api
+    @Override
+    public ApiInfoModel getApiInfoModel(String id) {
+        return infoService.getApiInfoModel(id);
+    }
 }

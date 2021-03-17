@@ -79,4 +79,12 @@ public interface InfoFacade {
     @PostMapping("/save/whole")
     void update(@RequestBody ApiInfoModel apiInfoModel);
 
+    /**
+     * 更新
+     *
+     * @param id api信息
+     */
+    @GetMapping("/{id}}/whole")
+    ApiInfoModel getApiInfoModel(@PathVariable("id") String id);
+
 }

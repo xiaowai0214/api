@@ -22,6 +22,7 @@ public class JsonPathTest {
         JSONPath.set(jsonObject,"data.student[1].name[1].nn","张三");
         JSONPath.set(jsonObject,"data.student[1].name[0].nn","张");
         //获取路径
+        String json = jsonObject.toJSONString();
         List<String> listjsonPath= JsonPathUtils.getListJsonPath(jsonObject);
         System.out.println("listJsonPath:"+listjsonPath.toString());
         //将路径上的内容替换
@@ -31,8 +32,14 @@ public class JsonPathTest {
             if (fields.length>0) {
                 String lastFields = fields[fields.length - 1];
                 DocumentContext ext = JsonPath.parse(jsonObject);
+                JsonPath p = JsonPath.compile("$." + tempPath);
+                Object read = ext.read(p);
+                System.out.println( tempPath + ":" + read);
+
+                String readjson = JsonPathUtils.readjson(json, tempPath);
+                System.out.println( readjson + ":" + readjson);
+
                 if (lastFields.equals("nn")) {
-                    JsonPath p = JsonPath.compile("$." + tempPath);
                     //可先取值在对值进行处理
                     ext.set(p, "吕厚帅");
                     String NewList = ext.jsonString();

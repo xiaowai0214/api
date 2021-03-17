@@ -10,6 +10,7 @@ import com.egova.api.enums.RequestScope;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.api.service.BaseMicroServiceWrapper;
 import com.egova.api.service.InfoService;
+import com.egova.api.util.JsonPathUtils;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
 import com.egova.entity.Category;
@@ -112,6 +113,31 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         saveAuthentication(apiInfoModel);
     }
 
+    @Override
+    public ApiInfoModel getApiInfoModel(String id) {
+        ApiInfoModel apiInfoModel = new ApiInfoModel();
+        Info info = Optional.ofNullable(infoRepository.getById(id)).orElseThrow(() -> ExceptionUtils.api("api信息为空"));
+        apiInfoModel.setInfo(info);
+        Optional.ofNullable(requestHeaderRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setRequestHeaders(headers));
+        Optional.ofNullable(requestParamRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setRequestParams(headers));
+        Optional.ofNullable(eventScriptRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setEventScripts(headers));
+        Optional.ofNullable(authenticationRepository.single("apiId",id)).ifPresent(authentication-> apiInfoModel.setAuthentication(authentication));
+        if (info.getRequestBodyType() == RequestBodyType.Json){
+            //包装为json
+            String json = "";
+            Map<String,Object> map = new HashMap<>();
+            requestParamRepository.query(SingleClause.equal("apiId",id))
+                    .stream()
+                    .filter(p-> p.getType() == RequestParamType.Json)
+                    .forEach(requestParam -> {
+                        map.put(requestParam.getName(),requestParam.getValueContent());
+                    });
+            json = JsonPathUtils.warpJson(map);
+            apiInfoModel.setJson(json);
+        }
+        return apiInfoModel;
+    }
+
     private void saveAuthentication(ApiInfoModel apiInfoModel) {
         authenticationRepository.delete(SingleClause.equal("projectId", apiInfoModel.getInfo().getProjectId()));
         if (apiInfoModel.getAuthentication() != null ){
@@ -202,8 +228,19 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     private void saveJsonParams(ApiInfoModel apiInfoModel){
         if (!StringUtils.isEmpty(apiInfoModel.getJson())){
             List<RequestParam> jsonParams = new ArrayList<>();
-            //todo json 打平
-            requestParamRepository.insertList(apiInfoModel.getRequestParams());
+            String json = apiInfoModel.getJson();
+            List<String> jsonPaths = JsonPathUtils.getListJsonPathByJsonString(json);
+            jsonPaths.forEach(path->{
+                RequestParam requestParam = new RequestParam();
+                requestParam.setId(UUID.randomUUID().toString());
+                requestParam.setType(RequestParamType.Json);
+                requestParam.setApiId(apiInfoModel.getInfo().getId());
+                requestParam.setName(path);
+                requestParam.setText(path);
+                requestParam.setValueContent(JsonPathUtils.readjson(json,path));
+                jsonParams.add(requestParam);
+            });
+            requestParamRepository.insertList(jsonParams);
         }
     }
 }

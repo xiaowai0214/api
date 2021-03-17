@@ -7,14 +7,17 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Predicate;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class JsonPathUtils {
     //获取jsonPath
+
+    public static List<String> getListJsonPathByJsonString(String json){
+        JSONObject jsonObject = JSONObject.parseObject(json);
+        return getListJsonPath(jsonObject);
+    }
+
     public static List<String> getListJsonPath(JSONObject jsonObject) {
 
         List<String> jsonPaths= JSONPath.paths(jsonObject).keySet().stream().collect(Collectors.toList());
@@ -78,6 +81,15 @@ public class JsonPathUtils {
         } catch (Exception e) {
             return "path not found";
         }
+    }
+
+    public static String warpJson(Map<String,Object> jsonPathMap){
+        //构造json
+        JSONObject jsonObject = new JSONObject();
+        jsonPathMap.forEach((k,v)->{
+            JSONPath.set(jsonObject,k,v);
+        });
+        return jsonObject.toJSONString();
     }
 
 

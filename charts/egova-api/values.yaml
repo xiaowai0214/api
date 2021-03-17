@@ -31,7 +31,7 @@ env:
     EGOVA_EDITOR_DOCUMENTJSURL: http://egova.top:30013
 
 service:
-  name: api
+  name: egova-api
   enabled: false
   type: NodePort
   port: 8788
