@@ -118,10 +118,10 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         ApiInfoModel apiInfoModel = new ApiInfoModel();
         Info info = Optional.ofNullable(infoRepository.getById(id)).orElseThrow(() -> ExceptionUtils.api("api信息为空"));
         apiInfoModel.setInfo(info);
-        Optional.ofNullable(requestHeaderRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setRequestHeaders(headers));
+        Optional.ofNullable(requestHeaderRepository.query(SingleClause.equal("belongId",id))).ifPresent(headers-> apiInfoModel.setRequestHeaders(headers));
         Optional.ofNullable(requestParamRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setRequestParams(headers));
         Optional.ofNullable(eventScriptRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setEventScripts(headers));
-        Optional.ofNullable(authenticationRepository.single("apiId",id)).ifPresent(authentication-> apiInfoModel.setAuthentication(authentication));
+        Optional.ofNullable(authenticationRepository.single("projectId",info.getProjectId())).ifPresent(authentication-> apiInfoModel.setAuthentication(authentication));
         if (info.getRequestBodyType() == RequestBodyType.Json){
             //包装为json
             String json = "";

@@ -1,6 +1,8 @@
 package com.egova.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.egova.api.convert.ParamConverter;
 import com.egova.api.domain.InfoRepository;
 import com.egova.api.entity.Info;
 import com.egova.api.enums.RequestBodyType;
@@ -111,7 +113,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (queryParamMap != null && queryParamMap.size() > 0) {
             finalUrl = url + "?";
             for (Map.Entry<String, Object> entry : queryParamMap.entrySet()) {
-                finalUrl += entry.getKey() + "=" + entry.getValue() + "&";
+                finalUrl += entry.getKey() + "=" + ParamConverter.convert(entry.getValue().toString()) + "&";
             }
             finalUrl = finalUrl.substring(0, finalUrl.length() - 1);    // 后缀处理，去除 ？ 或 & 符号
         }
@@ -125,7 +127,7 @@ public class ApiRunServiceImpl implements ApiRunService {
             formParamMap.forEach((k, v) -> formParams.add(new BasicNameValuePair(k, v.toString())));
             try {
 //                httpEntity.setEntity(new UrlEncodedFormEntity(formParams, "UTF-8"));
-                httpEntity.setEntity(new StringEntity(JSON.toJSONString(formParamMap)));
+                httpEntity.setEntity(new StringEntity(ParamConverter.convert(JSON.toJSONString(formParamMap))));
 
             } catch (UnsupportedEncodingException e) {
                 log.error(e.getMessage(), e);
@@ -133,9 +135,12 @@ public class ApiRunServiceImpl implements ApiRunService {
 
         } else {
             //body params
-            String bodyParams = JSON.toJSONString(json);
+            JSONObject jsonObject = JSONObject.parseObject(json);
+            String s = jsonObject.toJSONString();
+            s = ParamConverter.convert(s);
+//            String bodyParams = JSON.toJSONString(json);
             try {
-                httpEntity.setEntity(new StringEntity(bodyParams));
+                httpEntity.setEntity(new StringEntity(s));
             } catch (UnsupportedEncodingException e) {
                 log.error(e.getMessage(), e);
             }
@@ -186,5 +191,4 @@ public class ApiRunServiceImpl implements ApiRunService {
         }
         return responseContent;
     }
-
 }
