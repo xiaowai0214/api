@@ -8,11 +8,14 @@ import com.egova.api.entity.Info;
 import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
 import com.egova.api.model.ApiInfoModel;
+import com.egova.api.model.ApiResult;
 import com.egova.api.service.ApiRunService;
 import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
+import com.flagwind.commons.Monment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,6 +31,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Priority;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -37,8 +41,7 @@ import java.util.*;
 public class ApiRunServiceImpl implements ApiRunService {
     private final InfoRepository infoRepository;
 
-    @Override
-    public String run(String apiId, ApiInfoModel model) {
+    private HttpRequestBase wrapHttpRequest(String apiId, ApiInfoModel model){
         Info apiInfo = Optional.ofNullable(infoRepository.getById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
 
         // request headers
@@ -97,10 +100,23 @@ public class ApiRunServiceImpl implements ApiRunService {
                 remoteRequest.setHeader(entry.getKey(), entry.getValue());
             }
         }
+        return remoteRequest;
+    }
 
+    @Override
+    public String run(String apiId, ApiInfoModel model) {
+        HttpRequestBase remoteRequest = wrapHttpRequest(apiId, model);
         // write response
         String responseContent = remoteCall(remoteRequest);
         return responseContent;
+    }
+
+    @Override
+    public ApiResult runWeb(String apiId, ApiInfoModel model) {
+        ApiResult apiResult = new ApiResult();
+        HttpRequestBase remoteRequest = wrapHttpRequest(apiId, model);
+        remoteCall(remoteRequest,apiResult);
+        return apiResult;
     }
 
     @Override
@@ -160,6 +176,9 @@ public class ApiRunServiceImpl implements ApiRunService {
 
             // parse response
             HttpResponse response = httpClient.execute(remoteRequest);
+            Header[] allHeaders = response.getAllHeaders();
+            Arrays.stream(allHeaders).forEach(header -> System.out.println(header.getName() + ":" + header.getValue() ));
+
             HttpEntity entity = response.getEntity();
             if (null != entity) {
                 int statusCode = response.getStatusLine().getStatusCode();
@@ -190,5 +209,68 @@ public class ApiRunServiceImpl implements ApiRunService {
             }
         }
         return responseContent;
+    }
+
+    private void remoteCall(HttpRequestBase remoteRequest,ApiResult apiResult){
+        if (apiResult == null){
+            apiResult = new ApiResult();
+        }
+        String responseContent = null;
+        CloseableHttpClient httpClient = null;
+        try{
+            org.apache.http.client.config.RequestConfig requestConfig = org.apache.http.client.config.RequestConfig.custom().setSocketTimeout(10000).setConnectTimeout(10000).build();
+            remoteRequest.setConfig(requestConfig);
+
+            httpClient = HttpClients.custom().disableAutomaticRetries().build();
+
+            Header[] requestAllHeaders = remoteRequest.getAllHeaders();
+            for (Header header : requestAllHeaders) {
+                apiResult.getRequestHeaders().put(header.getName(),header.getValue());
+            }
+
+            // parse response
+            long start = new Monment().getTime();
+            HttpResponse response = httpClient.execute(remoteRequest);
+            long end = new Monment().getTime();
+            apiResult.setTime(end-start);
+            Header[] allHeaders = response.getAllHeaders();
+            for (Header header : allHeaders) {
+                apiResult.getResponseHeaders().put(header.getName(),header.getValue());
+            }
+
+            HttpEntity entity = response.getEntity();
+            if (null != entity) {
+                int statusCode = response.getStatusLine().getStatusCode();
+                apiResult.setCode(statusCode);
+                if (statusCode == 200) {
+                    responseContent = EntityUtils.toString(entity, "UTF-8");
+                    apiResult.setSize(Long.valueOf(responseContent.getBytes(StandardCharsets.UTF_8).length));
+                } else {
+                    responseContent = "请求状态异常：" + response.getStatusLine().getStatusCode();
+                    if (statusCode==302 && response.getFirstHeader("Location")!=null) {
+                        responseContent += "；Redirect地址：" + response.getFirstHeader("Location").getValue();
+                    }
+
+                }
+                EntityUtils.consume(entity);
+            }
+            log.info("http statusCode error, statusCode:" + response.getStatusLine().getStatusCode());
+
+        } catch (Exception e) {
+            responseContent = "请求异常：" + e.toString();
+        } finally{
+            if (remoteRequest!=null) {
+                remoteRequest.releaseConnection();
+            }
+            if (httpClient!=null) {
+                try {
+                    httpClient.close();
+                } catch (IOException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
+        }
+
+        apiResult.setContent(responseContent);
     }
 }

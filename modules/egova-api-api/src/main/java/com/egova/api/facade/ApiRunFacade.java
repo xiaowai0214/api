@@ -1,6 +1,7 @@
 package com.egova.api.facade;
 
 import com.egova.api.model.ApiInfoModel;
+import com.egova.api.model.ApiResult;
 import com.egova.cloud.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,18 @@ public interface ApiRunFacade {
 
     @PostMapping("/{apiId}")
     String run(@PathVariable("apiId") String apiId , @RequestBody ApiInfoModel model);
+
+    /**
+     * 保存
+     *
+     * @param apiId apiId
+     * @param model api项目表
+     * @return 主键
+     */
+
+    @PostMapping("/{apiId}/web")
+    ApiResult runWeb(@PathVariable("apiId") String apiId , @RequestBody ApiInfoModel model);
+
 
     /**
      * 获取输出转换格式，给ETL

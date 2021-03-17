@@ -2,6 +2,7 @@ package com.egova.api.controller.unity;
 
 import com.egova.api.facade.ApiRunFacade;
 import com.egova.api.model.ApiInfoModel;
+import com.egova.api.model.ApiResult;
 import com.egova.api.service.ApiRunService;
 import com.egova.web.annotation.Api;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,12 @@ public class ApiRunController implements ApiRunFacade {
     @Override
     public String run(@PathVariable String apiId, @RequestBody ApiInfoModel model) {
         return apiRunService.run(apiId,model);
+    }
+
+    @Api
+    @Override
+    public ApiResult runWeb(String apiId, ApiInfoModel model) {
+        return apiRunService.runWeb(apiId,model);
     }
 
     @Api
