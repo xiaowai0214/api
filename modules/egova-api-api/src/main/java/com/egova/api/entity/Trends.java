@@ -1,6 +1,8 @@
 package com.egova.api.entity;
 
 import com.egova.api.associative.ProjectNameProvider;
+import com.egova.api.enums.OperateType;
+import com.egova.api.enums.TrendsType;
 import com.egova.associative.Associative;
 import com.egova.associative.CategoryNameProvider;
 import com.egova.model.BaseEntity;
@@ -8,6 +10,7 @@ import com.egova.model.annotation.Display;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -24,6 +27,7 @@ import java.sql.Timestamp;
 @Table(name = "api_trends")
 @Display("api动态")
 @EqualsAndHashCode(callSuper = true)
+@RequiredArgsConstructor
 public class Trends extends BaseEntity {
 
     public static final String NAME = "Trends";
@@ -65,4 +69,20 @@ public class Trends extends BaseEntity {
     @Column(name = "apiName")
     private String apiName;
 
+    @Display("类型")
+    @Column(name = "type")
+    private TrendsType type;
+
+    @Display("操作类型")
+    @Column(name = "operateType")
+    private OperateType operateType;
+
+    public Trends(String projectId, String categoryId, String apiId, String apiName,TrendsType type, OperateType operateType) {
+        this.projectId = projectId;
+        this.categoryId = categoryId;
+        this.apiId = apiId;
+        this.apiName = apiName;
+        this.type = type;
+        this.operateType = operateType;
+    }
 }

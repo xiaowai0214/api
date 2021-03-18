@@ -1,5 +1,6 @@
 package com.egova.api.controller.unity;
 
+import com.egova.api.model.FileldMappingModel;
 import com.egova.web.annotation.Api;
 import com.egova.web.annotation.RequestDecorating;
 import com.egova.api.condition.FieldMappingCondition;
@@ -10,11 +11,7 @@ import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -76,6 +73,12 @@ public class FieldMappingController implements FieldMappingFacade {
         return fieldMappingService.deleteById(id);
     }
 
+    @Api
+    @Override
+    public List<FieldMapping> apiId(@PathVariable String apiId) {
+        return fieldMappingService.apiId(apiId);
+    }
+
     /**
      * 分页查询
      *
@@ -100,4 +103,21 @@ public class FieldMappingController implements FieldMappingFacade {
         return fieldMappingService.deleteByIds(ids);
     }
 
+    @Api
+    @Override
+    public List<FieldMapping> parse(@RequestParam String json, @RequestParam String root) {
+        return fieldMappingService.parse(json, root);
+    }
+
+    @Api
+    @Override
+    public FileldMappingModel parseModel(@RequestParam String json, @RequestParam String root) {
+        return fieldMappingService.parseModel(json, root);
+    }
+
+    @Api
+    @Override
+    public void insert(@RequestBody FileldMappingModel model) {
+        fieldMappingService.insert(model);
+    }
 }

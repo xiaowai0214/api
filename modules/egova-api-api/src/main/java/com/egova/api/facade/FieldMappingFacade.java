@@ -1,13 +1,11 @@
 package com.egova.api.facade;
 
-import com.egova.cloud.FeignClient;
 import com.egova.api.entity.FieldMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.egova.api.model.FileldMappingModel;
+import com.egova.cloud.FeignClient;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * created by huangkang
@@ -49,5 +47,42 @@ public interface FieldMappingFacade {
      */
     @DeleteMapping(value = "/{id}")
     int deleteById(@PathVariable("id") String id);
+
+    /**
+     * 主键删除
+     *
+     * @param apiId
+     * @return List<FieldMapping>
+     */
+    @PostMapping(value = "/apiId/{apiId}")
+    List<FieldMapping> apiId(@PathVariable("apiId") String apiId);
+
+
+    /**
+     * 主键删除
+     *
+     * @param json
+     * @return List<FieldMapping>
+     */
+    @PostMapping(value = "/parse/fields")
+    List<FieldMapping> parse(@RequestParam("json") String json, @RequestParam("root") String root );
+
+    /**
+     * 主键删除
+     *
+     * @param json
+     * @return List<FieldMapping>
+     */
+    @PostMapping(value = "/parse/model")
+    FileldMappingModel parseModel(@RequestParam("json") String json, @RequestParam("root") String root );
+
+    /**
+     * 主键删除
+     *
+     * @param model
+     * @return List<FieldMapping>
+     */
+    @PostMapping(value = "/insert")
+    void insert(@RequestBody FileldMappingModel model);
 
 }

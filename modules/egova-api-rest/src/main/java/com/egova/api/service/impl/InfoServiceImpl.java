@@ -4,9 +4,9 @@ import com.egova.api.condition.InfoCondition;
 import com.egova.api.domain.*;
 import com.egova.api.entity.Info;
 import com.egova.api.entity.RequestParam;
-import com.egova.api.enums.RequestBodyType;
-import com.egova.api.enums.RequestParamType;
-import com.egova.api.enums.RequestScope;
+import com.egova.api.entity.Trends;
+import com.egova.api.enums.*;
+import com.egova.api.facade.TrendsFacade;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.api.service.BaseMicroServiceWrapper;
 import com.egova.api.service.InfoService;
@@ -49,6 +49,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     private final RequestHeaderRepository requestHeaderRepository;
     private final RequestParamRepository requestParamRepository;
     private final BaseMicroServiceWrapper baseMicroServiceWrapper;
+    private final TrendsFacade trendsFacade;
 
     @Override
     protected AbstractRepositoryBase<Info, String> getRepository() {
@@ -64,17 +65,31 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     public String insert(Info entity) {
         entity.setCreator(UserContext.username());
         entity.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        return super.insert(entity);
+
+        String insert = super.insert(entity);
+        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),insert,entity.getName(), TrendsType.APi, OperateType.Insert));
+        return insert;
     }
 
     @Override
     public void update(Info entity) {
         super.update(entity);
+        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),entity.getId(),entity.getName(), TrendsType.APi, OperateType.Update));
     }
 
     @Override
     public void modify(String id, HashMap<String, Object> map) {
         super.modify(map, SingleClause.equal("id",id));
+        Info entity = infoRepository.getById(id);
+        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),entity.getId(),entity.getName(), TrendsType.APi, OperateType.Update));
+    }
+
+    @Override
+    public int deleteById(String id) {
+        Info entity = infoRepository.getById(id);
+        super.deleteById(id);
+        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),entity.getId(),entity.getName(), TrendsType.APi, OperateType.Delete));
+        return 1;
     }
 
     @Override

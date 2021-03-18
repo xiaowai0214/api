@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 
 /**
  * created by huangkang
@@ -27,15 +29,24 @@ public class ApiRunController implements ApiRunFacade {
         return apiRunService.run(apiId,model);
     }
 
+    @Override
+    public String run(@PathVariable String apiId, @RequestBody HashMap<String, Object> map) {
+        return apiRunService.run(apiId,map);
+    }
+
     @Api
     @Override
     public ApiResult runWeb(String apiId, ApiInfoModel model) {
         return apiRunService.runWeb(apiId,model);
     }
 
+
     @Api
     @Override
     public Object outputFormat(@PathVariable String apiId) {
         return apiRunService.outputFormat(apiId);
     }
+
+
+
 }

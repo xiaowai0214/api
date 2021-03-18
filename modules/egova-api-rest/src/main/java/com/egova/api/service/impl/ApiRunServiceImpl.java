@@ -3,13 +3,17 @@ package com.egova.api.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.egova.api.convert.ParamConverter;
-import com.egova.api.domain.InfoRepository;
+import com.egova.api.domain.FieldMappingRepository;
+import com.egova.api.entity.FieldMapping;
 import com.egova.api.entity.Info;
+import com.egova.api.entity.RequestParam;
 import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
+import com.egova.api.facade.InfoFacade;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.api.model.ApiResult;
 import com.egova.api.service.ApiRunService;
+import com.egova.api.util.JsonPathUtils;
 import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
 import com.flagwind.commons.Monment;
@@ -39,10 +43,12 @@ import java.util.*;
 @Priority(5)
 @RequiredArgsConstructor
 public class ApiRunServiceImpl implements ApiRunService {
-    private final InfoRepository infoRepository;
+//    private final InfoRepository infoRepository;
+    private final InfoFacade infoFacade;
+    private final FieldMappingRepository fieldMappingRepository;
 
     private HttpRequestBase wrapHttpRequest(String apiId, ApiInfoModel model){
-        Info apiInfo = Optional.ofNullable(infoRepository.getById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
+        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
 
         // request headers
         List<Map<String, Object>> requestHeaders = new ArrayList<>();
@@ -103,11 +109,37 @@ public class ApiRunServiceImpl implements ApiRunService {
         return remoteRequest;
     }
 
+
+    private HttpRequestBase wrapHttpRequest(String apiId, Map<String,Object> requestMap){
+        ApiInfoModel apiInfoModel = infoFacade.getApiInfoModel(apiId);
+
+        List<RequestParam> requestParams = apiInfoModel.getRequestParams();
+        requestParams.forEach(requestParam -> {
+            if (requestMap.containsKey(requestParam.getName())){
+                requestParam.setValueContent(requestMap.get(requestParam.getName()).toString());
+            }
+        });
+
+        return wrapHttpRequest(apiId,apiInfoModel);
+    }
+
     @Override
     public String run(String apiId, ApiInfoModel model) {
         HttpRequestBase remoteRequest = wrapHttpRequest(apiId, model);
         // write response
         String responseContent = remoteCall(remoteRequest);
+        responseContent = convert(responseContent,apiId);
+        return responseContent;
+    }
+
+
+
+    @Override
+    public String run(String apiId, HashMap<String, Object> map) {
+        HttpRequestBase remoteRequest = wrapHttpRequest(apiId, map);
+        // write response
+        String responseContent = remoteCall(remoteRequest);
+        responseContent = convert(responseContent,apiId);
         return responseContent;
     }
 
@@ -116,6 +148,10 @@ public class ApiRunServiceImpl implements ApiRunService {
         ApiResult apiResult = new ApiResult();
         HttpRequestBase remoteRequest = wrapHttpRequest(apiId, model);
         remoteCall(remoteRequest,apiResult);
+        if (200 != apiResult.getCode() ){
+            return apiResult;
+        }
+        apiResult.setContent(convert(apiResult.getContent(),apiId));
         return apiResult;
     }
 
@@ -272,5 +308,20 @@ public class ApiRunServiceImpl implements ApiRunService {
         }
 
         apiResult.setContent(responseContent);
+    }
+
+    public String convert(String responseContent, String apiId) {
+        List<FieldMapping> fieldMappings = Optional.ofNullable(fieldMappingRepository.many("apiId", apiId)).orElse(null);
+        if (CollectionUtils.isEmpty(fieldMappings)){
+            return responseContent;
+        }
+        Map<String,Object> map = new HashMap<>();
+        fieldMappings.stream()
+                .forEach(fieldMapping -> {
+                    String value = JsonPathUtils.readjson(responseContent,fieldMapping.getParamPath());
+                    map.put(fieldMapping.getName(),value);
+                });
+        return JsonPathUtils.warpJson(map);
+
     }
 }

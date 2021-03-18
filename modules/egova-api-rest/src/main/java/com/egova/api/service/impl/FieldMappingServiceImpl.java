@@ -1,18 +1,23 @@
 package com.egova.api.service.impl;
 
-import com.egova.data.service.AbstractRepositoryBase;
-import com.egova.data.service.TemplateService;
 import com.egova.api.condition.FieldMappingCondition;
 import com.egova.api.domain.FieldMappingRepository;
 import com.egova.api.entity.FieldMapping;
+import com.egova.api.model.FileldMappingModel;
 import com.egova.api.service.FieldMappingService;
+import com.egova.api.util.JsonPathUtils;
+import com.egova.data.service.AbstractRepositoryBase;
+import com.egova.data.service.TemplateService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
+import com.flagwind.commons.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Priority;
+import java.util.*;
 
 /**
  * created by huangkang
@@ -34,5 +39,51 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
     public PageResult<FieldMapping> page(QueryModel<FieldMappingCondition> model) {
         return super.page(model.getCondition(), model.getPaging(), model.getSorts());
     }
+
+    @Override
+    public List<FieldMapping> apiId(String apiId) {
+        return fieldMappingRepository.many("apiId",apiId);
+    }
+
+    @Override
+    public List<FieldMapping> parse(String json, String root) {
+        List<FieldMapping> fieldMappings = new ArrayList<>();
+        List<String> paths = JsonPathUtils.getListJsonPathByJsonString(json);
+        paths.stream()
+                .filter(path-> StringUtils.isEmpty(root) || path.startsWith(root))
+                .forEach(path->{
+                    FieldMapping fieldMapping = new FieldMapping();
+                    String value = JsonPathUtils.readjson(json, path);
+                    fieldMapping.setName(StringUtils.isEmpty(root) ? path : path.substring(root.length() + 1));
+                    fieldMapping.setValueContent(value);
+                    fieldMappings.add(fieldMapping);
+                });
+        return fieldMappings;
+    }
+
+    @Override
+    public FileldMappingModel parseModel(String json, String root) {
+        FileldMappingModel model = new FileldMappingModel();
+        model.setOrigionJson(json);
+        model.setConvertRoot(root);
+        List<FieldMapping> fieldMappings = parse(json, root);
+        model.setFieldMappings(fieldMappings);
+        Map<String,Object> map = new HashMap<>();
+        fieldMappings
+                .forEach(fieldMapping -> map.put(fieldMapping.getName(),fieldMapping.getValueContent()));
+        String newJson = JsonPathUtils.warpJson(map);
+        model.setNewJson(newJson);
+        return model;
+    }
+
+    @Override
+    public void insert(FileldMappingModel model) {
+        model.getFieldMappings()
+                .forEach(fieldMapping -> fieldMapping.setId(UUID.randomUUID().toString()));
+        if (!CollectionUtils.isEmpty(model.getFieldMappings())){
+            fieldMappingRepository.insertList(model.getFieldMappings());
+        }
+    }
+
 
 }

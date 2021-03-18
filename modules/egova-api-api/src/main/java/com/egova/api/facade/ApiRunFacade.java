@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.HashMap;
+
 /**
  * created by huangkang
  */
@@ -25,6 +27,17 @@ public interface ApiRunFacade {
 
     @PostMapping("/{apiId}")
     String run(@PathVariable("apiId") String apiId , @RequestBody ApiInfoModel model);
+
+    /**
+     * 保存
+     *
+     * @param apiId apiId
+     * @param map 参数
+     * @return 主键
+     */
+
+    @PostMapping("/{apiId}/data-center")
+    String run(@PathVariable("apiId") String apiId , @RequestBody HashMap<String,Object> map);
 
     /**
      * 保存
