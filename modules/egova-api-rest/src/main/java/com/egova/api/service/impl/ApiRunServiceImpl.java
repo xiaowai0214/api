@@ -7,6 +7,7 @@ import com.egova.api.domain.FieldMappingRepository;
 import com.egova.api.entity.FieldMapping;
 import com.egova.api.entity.Info;
 import com.egova.api.entity.RequestParam;
+import com.egova.api.enums.DataType;
 import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
 import com.egova.api.facade.InfoFacade;
@@ -17,6 +18,7 @@ import com.egova.api.util.JsonPathUtils;
 import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
 import com.flagwind.commons.Monment;
+import com.flagwind.commons.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -36,6 +38,7 @@ import javax.annotation.Priority;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -319,9 +322,31 @@ public class ApiRunServiceImpl implements ApiRunService {
         fieldMappings.stream()
                 .forEach(fieldMapping -> {
                     String value = JsonPathUtils.readjson(responseContent,fieldMapping.getParamPath());
-                    map.put(fieldMapping.getName(),value);
+                    Object transform = transform(value, fieldMapping.getValueType());
+                    map.put(fieldMapping.getName(),transform);
                 });
         return JsonPathUtils.warpJson(map);
 
+    }
+
+    public Object transform(String input, DataType dataType){
+        if (StringUtils.isEmpty(input)){
+            return null;
+        }
+        switch (dataType){
+            case String:
+                return input;
+            case Long:
+                return Long.valueOf(input);
+            case Float:
+                return Float.valueOf(input);
+            case Boolean:
+                return Boolean.valueOf(input);
+            case Integer:
+                return Integer.valueOf(input);
+            case Timestamp:
+                return new Timestamp(new Monment(input, "yyyy-MM-dd HH:mm:ss").getTime());
+        }
+        return null;
     }
 }

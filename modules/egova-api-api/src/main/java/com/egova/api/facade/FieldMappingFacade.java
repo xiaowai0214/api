@@ -54,7 +54,7 @@ public interface FieldMappingFacade {
      * @param apiId
      * @return List<FieldMapping>
      */
-    @PostMapping(value = "/apiId/{apiId}")
+    @GetMapping(value = "/apiId/{apiId}")
     List<FieldMapping> apiId(@PathVariable("apiId") String apiId);
 
 
