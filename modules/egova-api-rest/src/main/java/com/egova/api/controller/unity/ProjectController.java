@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * created by huangkang
@@ -70,6 +71,12 @@ public class ProjectController implements ProjectFacade {
     @Override
     public int deleteById(@PathVariable String id) {
         return projectService.deleteById(id);
+    }
+
+    @Api
+    @Override
+    public Map<String, String> getNameMap() {
+        return projectService.getNameMap();
     }
 
     /**
