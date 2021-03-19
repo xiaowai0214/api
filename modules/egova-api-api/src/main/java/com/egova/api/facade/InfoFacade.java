@@ -84,7 +84,7 @@ public interface InfoFacade {
      *
      * @param id api信息
      */
-    @GetMapping("/{id}}/whole")
+    @GetMapping("/{id}/whole")
     ApiInfoModel getApiInfoModel(@PathVariable("id") String id);
 
 }
