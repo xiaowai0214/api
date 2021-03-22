@@ -1,8 +1,8 @@
 package com.egova.api.util;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import com.flagwind.commons.StringUtils;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Predicate;
@@ -65,8 +65,8 @@ public class JsonPathUtils {
                 return value.toString();
             } else if (value instanceof Boolean) {
                 return value.toString();
-            } else if (value instanceof JSONArray) {
-                JSONArray arr = (JSONArray) value;
+            } else if (value instanceof net.minidev.json.JSONArray) {
+                net.minidev.json.JSONArray  arr = (net.minidev.json.JSONArray) value;
                 if (!arr.isEmpty()) {
                     return arr.toJSONString();
                 } else
@@ -90,6 +90,32 @@ public class JsonPathUtils {
             JSONPath.set(jsonObject,k,v);
         });
         return jsonObject.toJSONString();
+    }
+
+
+    public static void enumeration(List<String[]> list, String[] first, String origin, List<String> result)
+    {
+        for (int i = 0; i < list.size(); i++)
+        {
+            //取得当前的数组
+            if (i == list.indexOf(first))
+            {
+                //迭代数组
+                for (String st : first)
+                {
+                    st = StringUtils.isBlank(origin) ? st : origin + "," + st;
+                    if (i < list.size() - 1)
+                    {
+                        enumeration(list, list.get(i + 1), st, result);
+                    }
+                    else if (i == list.size() - 1)
+                    {
+                        System.out.println(st);
+                        result.add(st);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -124,6 +150,7 @@ public class JsonPathUtils {
 
         }
     }
+
 
     public static void main(String[] args) {
         String params = "{\n" +

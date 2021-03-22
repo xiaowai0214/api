@@ -1,13 +1,13 @@
 package com.egova.form;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
 import com.egova.api.util.JsonPathUtils;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
+import com.egova.json.utils.JsonUtils;
 import org.junit.Test;
+import org.springframework.util.CollectionUtils;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JsonPathTest {
     //    测试方法
@@ -15,38 +15,257 @@ public class JsonPathTest {
     public void jsonReplaceVal(){
         //构造json
         JSONObject jsonObject = new JSONObject();
-        JSONPath.set(jsonObject,"data.person","个人");
-        JSONPath.set(jsonObject,"data.student[0].age","20");
-        JSONPath.set(jsonObject,"data.student[0].name[0].v","张三");
-        JSONPath.set(jsonObject,"data.student[1].age","20");
-        JSONPath.set(jsonObject,"data.student[1].name[1].nn","张三");
-        JSONPath.set(jsonObject,"data.student[1].name[0].nn","张");
-        //获取路径
-        String json = jsonObject.toJSONString();
+//        JSONPath.set(jsonObject,"data.person","个人");
+//        JSONPath.set(jsonObject,"data.student[0].age","20");
+//        JSONPath.set(jsonObject,"data.student[0].name[0].v","张三");
+//        JSONPath.set(jsonObject,"data.student[1].age","20");
+//        JSONPath.set(jsonObject,"data.student[1].name[1].nn","张三");
+//        JSONPath.set(jsonObject,"data.student[1].name[0].nn","张");
+//        //获取路径
+//        String json = jsonObject.toJSONString();
+
+//        String json = "{\n" +
+//                "    \"data\":{\n" +
+//                "        \"student\":[\n" +
+//                "            {\n" +
+//                "                \"name\":\"张三\",\n" +
+//                "                \"age\":\"20\"\n" +
+//                "            },\n" +
+//                "            {\n" +
+//                "                \"name\":\"李四\",\n" +
+//                "                \"age\":\"21\"\n" +
+//                "            }\n" +
+//                "        ],\n" +
+//                "        \"teacher\":[\n" +
+//                "            {\n" +
+//                "                \"name\":\"peter\"\n" +
+//                "            }\n" +
+//                "        ],\n" +
+//                "        \"person\":\"个人\"\n" +
+//                "    },\n" +
+//                "    \"code\":200,\n" +
+//                "    \"message\":\"success\"\n" +
+//                "}";
+
+        String json = "{\n" +
+                "    \"data\":{\n" +
+                "        \"student\":[\n" +
+                "            {\n" +
+                "                \"name\":\"张三\",\n" +
+                "                \"age\":\"20\",\n" +
+                "                \"teacher\":[\n" +
+                "                    {\n" +
+                "                        \"name\":\"peter\",\n" +
+                "                        \"project\":\"java\"\n" +
+                "                    },\n" +
+                "                    {\n" +
+                "                        \"name\":\"jack\",\n" +
+                "                        \"project\":\"go\"\n" +
+                "                    }\n" +
+                "                ]\n" +
+                "            },\n" +
+                "            {\n" +
+                "                \"name\":\"李四\",\n" +
+                "                \"age\":\"21\",\n" +
+                "                \"teacher\":[\n" +
+                "                    {\n" +
+                "                        \"name\":\"james\",\n" +
+                "                        \"project\":\"html\"\n" +
+                "                    },\n" +
+                "                    {\n" +
+                "                        \"name\":\"mike\",\n" +
+                "                        \"project\":\"css\"\n" +
+                "                    }\n" +
+                "                ]\n" +
+                "            }\n" +
+                "        ],\n" +
+                "        \"person\":\"个人\"\n" +
+                "    },\n" +
+                "    \"code\":200,\n" +
+                "    \"message\":\"success\"\n" +
+                "}";
+        jsonObject = JSONObject.parseObject(json);
+
+
         List<String> listjsonPath= JsonPathUtils.getListJsonPath(jsonObject);
         System.out.println("listJsonPath:"+listjsonPath.toString());
+        Map<String,Object> map = new HashMap<>();
         //将路径上的内容替换
-        for(int i=0;i<listjsonPath.size();i++){
-            String  tempPath=  listjsonPath.get(i);
-            String[] fields=tempPath.split("\\.");
-            if (fields.length>0) {
-                String lastFields = fields[fields.length - 1];
-                DocumentContext ext = JsonPath.parse(jsonObject);
-                JsonPath p = JsonPath.compile("$." + tempPath);
-                Object read = ext.read(p);
-                System.out.println( tempPath + ":" + read);
+//        for(int i=0;i<listjsonPath.size();i++){
+//            String  tempPath=  listjsonPath.get(i);
+//            String[] fields=tempPath.split("\\.");
+//            if (fields.length>0) {
+//                String lastFields = fields[fields.length - 1];
+//                DocumentContext ext = JsonPath.parse(jsonObject);
+//                JsonPath p = JsonPath.compile("$." + tempPath);
+//                Object read = ext.read(p);
+//                System.out.println( tempPath + ":" + read);
+//
+//                String readjson = JsonPathUtils.readjson(json, tempPath);
+//                System.out.println( readjson + ":" + readjson);
+//
+//                if (lastFields.equals("nn")) {
+//                    //可先取值在对值进行处理
+//                    ext.set(p, "吕厚帅");
+//                    String NewList = ext.jsonString();
+//                    System.out.println("NewsList:" + NewList);
+//                }
+//                map.put(tempPath,readjson);
+//            }
+//
+//        }
 
-                String readjson = JsonPathUtils.readjson(json, tempPath);
-                System.out.println( readjson + ":" + readjson);
 
-                if (lastFields.equals("nn")) {
-                    //可先取值在对值进行处理
-                    ext.set(p, "吕厚帅");
-                    String NewList = ext.jsonString();
-                    System.out.println("NewsList:" + NewList);
-                }
-            }
+        //将路径的[num] 替换成 [*] 并去重
+        List<String> distinctPaths = distinctPath(listjsonPath);
 
-        }
+        distinctPaths.forEach(e-> System.out.println(e));
+
+//        distinctPaths.forEach(e->{
+//
+//            String values = JsonPathUtils.readjson(json, e);
+//            System.out.println(values);
+//            if (values.startsWith("[") && values.endsWith("]")){
+//                //数组
+//                JSONArray array = JSONArray.parseArray(values);
+////                String substring = values.substring(1, values.length() - 1);
+////                String[] arr = new String[]{substring};
+//                for (int i = 0; i < array.size(); i++) {
+//                    String item = e.replaceAll("\\*", String.valueOf(i));
+//                    String itemValue = JsonPathUtils.readjson(json, item);
+//                    map.put(item,itemValue);
+//                }
+//            }else {
+//                String itemValue = JsonPathUtils.readjson(json, e);
+//                map.put(e,itemValue);
+//            }
+//        });
+
+        Map<String, List<Integer>> map1 = pathMap(listjsonPath);
+        System.out.println(JsonUtils.serialize(map1));
+
+        List<String> realPaths = generateRealPath(map1);
+        realPaths.stream()
+                .filter(p-> listjsonPath.contains(p))
+                .forEach(p-> {
+                    System.out.println(p);
+                    String itemValue = JsonPathUtils.readjson(json, p);
+                    map.put(p,itemValue);
+                });
+        String s = JsonPathUtils.warpJson(map);
+        System.out.println(s);
     }
+
+    private List<String> generateRealPath(Map<String, List<Integer>> map) {
+        List<String> list = new ArrayList<>();
+
+        map.forEach((k,v)->{
+            if (CollectionUtils.isEmpty(v)){
+                list.add(k);
+            }else {
+                List<String> indexs = getIndexs(v);
+                indexs.forEach(index->{
+                    String[] indexArr = index.split(",");
+                    String[] pathArr = k.split("[*]");
+                    String realPath = pathArr[0];
+                    for (int i = 0; i < indexArr.length; i++) {
+                        realPath = realPath + indexArr[i]  + pathArr[i+1];
+                    }
+                    list.add(realPath);
+                });
+            }
+        });
+
+        return list;
+
+    }
+
+    private List<String> getIndexs(List<Integer> params) {
+        List<String> indexs = new ArrayList<>();
+        List<String[]> list = new ArrayList<>();
+        params.forEach(max->{
+            String[] arr = new String[max + 1];
+            for (int i = 0; i < max + 1; i++) {
+                arr[i] = String.valueOf(i);
+            }
+            list.add(arr);
+        });
+        JsonPathUtils.enumeration(list, list.get(0),"",indexs);
+        return indexs;
+    }
+
+    private List<String> distinctPath(List<String> paths) {
+        Set<String> set = new HashSet<>();
+        paths.forEach(path-> {
+            String s = path.replaceAll("[^[0-9]]", "*");
+            set.add(s);
+        });
+        return set.stream().sorted(Comparator.comparing(String::length))
+                .collect(Collectors.toList());
+
+    }
+
+    private Map<String,List<Integer>> pathMap(List<String> paths) {
+        Map<String,List<Integer>> map = new HashMap<>();
+        Set<String> set = new HashSet<>();
+        paths.forEach(path-> {
+            String s = path.replaceAll("[^[0-9]]", "*");
+            set.add(s);
+        });
+         set.stream().sorted(Comparator.comparing(String::length))
+                .collect(Collectors.toList());
+
+
+
+         set.forEach(s->{
+             //找出每个[*]的 * 代表的数量
+             if (!s.contains("[*]")){
+                 map.put(s, new ArrayList<>());
+                 return;
+             }
+             List<Integer> sizes = new ArrayList<>();
+             List<String> spiltPaths = spiltPaths(s, new ArrayList<>());
+             spiltPaths.forEach(split->{
+                 List<Integer> collect = paths.stream()
+                         .filter(p -> {
+                             String patten = p.replaceAll("[^[0-9]]", "*");
+                             return patten.startsWith(split);
+                         })
+                         .map(p -> {
+                             String size = p.substring(0, split.length()).substring(split.length() - 2, split.length() - 1);
+                             return Integer.valueOf(size);
+                         })
+                         .sorted()
+                         .collect(Collectors.toList());
+                 sizes.add(collect.get(collect.size()-1));
+             });
+             map.put(s,sizes);
+         });
+         return map;
+    }
+
+
+    @Test
+    public void split(){
+        String path = "a.b[*].c[*].d.e[*]";
+        List<String> list = new ArrayList<>();
+        List<String> paths = spiltPaths(path, list);
+        paths.forEach(s-> System.out.println(s));
+    }
+
+    private List<String> spiltPaths(String path, List<String> list){
+        if (list == null){
+            list = new ArrayList();
+        }
+        if (!path.contains("[*]")){
+            return list;
+        }
+        int i = path.indexOf("[*]");
+        String s1 = path.substring(0, i + 3);
+        list.add(list.size() == 0 ? s1 : list.get(list.size()-1) + s1);
+        path = path.substring(i + 3);
+        return spiltPaths(path,list);
+    }
+
+
 }
