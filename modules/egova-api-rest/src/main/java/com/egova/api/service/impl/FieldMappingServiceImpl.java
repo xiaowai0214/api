@@ -61,6 +61,8 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
                 .filter(path-> StringUtils.isEmpty(root) || path.startsWith(root))
                 .forEach(path->{
                     FieldMapping fieldMapping = new FieldMapping();
+                    fieldMapping.setOriginalParamPath(path);
+                    fieldMapping.setParamPath(path);
                     Object value = JsonPathUtils.readjson(json, path);
                     fieldMapping.setName(StringUtils.isEmpty(root) ? path : path.substring(root.length() + 1));
                     fieldMapping.setValueContent(null == value ? null : value.toString());
