@@ -2,6 +2,7 @@ package com.egova.api.service.impl;
 
 import com.egova.api.condition.InfoCondition;
 import com.egova.api.domain.*;
+import com.egova.api.entity.ConvertConfig;
 import com.egova.api.entity.Info;
 import com.egova.api.entity.RequestParam;
 import com.egova.api.entity.Trends;
@@ -48,6 +49,8 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     private final EventScriptRepository eventScriptRepository;
     private final RequestHeaderRepository requestHeaderRepository;
     private final RequestParamRepository requestParamRepository;
+    private final FieldMappingRepository fieldMappingRepository;
+    private final ConvertConfigRepository convertConfigRepository;
     private final BaseMicroServiceWrapper baseMicroServiceWrapper;
     private final TrendsFacade trendsFacade;
 
@@ -126,6 +129,34 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
 
         //4.认证
         saveAuthentication(apiInfoModel);
+
+        //5.转换规则
+        saveConvertConfig(apiInfoModel);
+
+        //6.转换字段映射
+        saveFieldMapping(apiInfoModel);
+    }
+
+    private void saveConvertConfig(ApiInfoModel model) {
+        convertConfigRepository.delete(SingleClause.equal("apiId",model.getInfo().getId()));
+        ConvertConfig convertConfig = model.getConvertConfig();
+        if (convertConfig != null){
+            convertConfig.setApiId(model.getInfo().getId());
+            convertConfig.setId(UUID.randomUUID().toString());
+            convertConfigRepository.insert(convertConfig);
+        }
+    }
+
+    private void saveFieldMapping(ApiInfoModel model) {
+        fieldMappingRepository.delete(SingleClause.equal("apiId",model.getInfo().getId()));
+        model.getFieldMappings()
+                .forEach(fieldMapping -> {
+                    fieldMapping.setId(UUID.randomUUID().toString());
+                    fieldMapping.setApiId(model.getInfo().getId());
+                });
+        if (!CollectionUtils.isEmpty(model.getFieldMappings())){
+            fieldMappingRepository.insertList(model.getFieldMappings());
+        }
     }
 
     @Override
@@ -137,6 +168,8 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         Optional.ofNullable(requestParamRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setRequestParams(headers));
         Optional.ofNullable(eventScriptRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setEventScripts(headers));
         Optional.ofNullable(authenticationRepository.single("projectId",info.getProjectId())).ifPresent(authentication-> apiInfoModel.setAuthentication(authentication));
+        Optional.ofNullable(convertConfigRepository.single("apiId",id)).ifPresent(convertConfig-> apiInfoModel.setConvertConfig(convertConfig));
+        Optional.ofNullable(fieldMappingRepository.query(SingleClause.equal("apiId",id))).ifPresent(fieldMappings-> apiInfoModel.setFieldMappings(fieldMappings));
         if (info.getRequestBodyType() == RequestBodyType.Json){
             //包装为json
             String json = "";

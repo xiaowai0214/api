@@ -22,4 +22,8 @@ public class ApiInfoModel {
     private List<EventScript> eventScripts;
 
     private Authentication authentication;
+
+    private List<FieldMapping> fieldMappings;
+
+    private ConvertConfig convertConfig;
 }

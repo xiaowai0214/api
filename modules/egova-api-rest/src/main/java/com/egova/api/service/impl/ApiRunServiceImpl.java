@@ -334,6 +334,9 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (null == input){
             return null;
         }
+        if (dataType == null){
+            return input.toString();
+        }
         switch (dataType){
             case String:
                 return input;
@@ -348,6 +351,6 @@ public class ApiRunServiceImpl implements ApiRunService {
             case Timestamp:
                 return new Timestamp(new Monment(input.toString(), "yyyy-MM-dd HH:mm:ss").getTime());
         }
-        return input.toString();
+        return input;
     }
 }
