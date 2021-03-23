@@ -1,15 +1,20 @@
 package com.egova.api.model;
 
+import com.egova.api.entity.ConvertConfig;
 import com.egova.api.entity.FieldMapping;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class FileldMappingModel {
+public class FieldMappingModel {
+    private String apiId;
+
     private List<FieldMapping> fieldMappings;
 
-    private String origionJson;
+    private ConvertConfig convertConfig;
+
+    private String originalJson;
 
     private String convertRoot;
 

@@ -1,9 +1,11 @@
 package com.egova.api.service.impl;
 
 import com.egova.api.condition.FieldMappingCondition;
+import com.egova.api.domain.ConvertConfigRepository;
 import com.egova.api.domain.FieldMappingRepository;
+import com.egova.api.entity.ConvertConfig;
 import com.egova.api.entity.FieldMapping;
-import com.egova.api.model.FileldMappingModel;
+import com.egova.api.model.FieldMappingModel;
 import com.egova.api.service.FieldMappingService;
 import com.egova.api.util.JsonPathUtils;
 import com.egova.data.service.AbstractRepositoryBase;
@@ -11,6 +13,7 @@ import com.egova.data.service.TemplateService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import com.flagwind.commons.StringUtils;
+import com.flagwind.persistent.model.SingleClause;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -30,6 +33,7 @@ import java.util.*;
 public class FieldMappingServiceImpl extends TemplateService<FieldMapping, String> implements FieldMappingService {
 
     private final FieldMappingRepository fieldMappingRepository;
+    private final ConvertConfigRepository convertConfigRepository;
 
     @Override
     protected AbstractRepositoryBase<FieldMapping, String> getRepository() {
@@ -66,9 +70,9 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
     }
 
     @Override
-    public FileldMappingModel parseModel(String json, String root, Boolean collapse) {
-        FileldMappingModel model = new FileldMappingModel();
-        model.setOrigionJson(json);
+    public FieldMappingModel parseModel(String json, String root, Boolean collapse) {
+        FieldMappingModel model = new FieldMappingModel();
+        model.setOriginalJson(json);
         model.setConvertRoot(root);
         List<FieldMapping> fieldMappings = parse(json, root,collapse);
         model.setFieldMappings(fieldMappings);
@@ -81,13 +85,31 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
     }
 
     @Override
-    public void insert(FileldMappingModel model) {
+    public void insert(FieldMappingModel model) {
+        fieldMappingRepository.delete(SingleClause.equal("apiId",model.getApiId()));
+        convertConfigRepository.delete(SingleClause.equal("apiId",model.getApiId()));
+        ConvertConfig convertConfig = model.getConvertConfig();
+        if (convertConfig != null){
+            convertConfig.setApiId(model.getApiId());
+            convertConfig.setId(UUID.randomUUID().toString());
+            convertConfigRepository.insert(convertConfig);
+        }
         model.getFieldMappings()
-                .forEach(fieldMapping -> fieldMapping.setId(UUID.randomUUID().toString()));
+                .forEach(fieldMapping -> {
+                    fieldMapping.setId(UUID.randomUUID().toString());
+                    fieldMapping.setApiId(model.getApiId());
+                });
         if (!CollectionUtils.isEmpty(model.getFieldMappings())){
             fieldMappingRepository.insertList(model.getFieldMappings());
         }
     }
 
-
+    @Override
+    public FieldMappingModel getModelByApiId(String apiId) {
+        FieldMappingModel model = new FieldMappingModel();
+        model.setApiId(apiId);
+        model.setFieldMappings(fieldMappingRepository.query(SingleClause.equal("apiId",apiId)));
+        model.setConvertConfig(convertConfigRepository.single("apiId",apiId));
+        return model;
+    }
 }

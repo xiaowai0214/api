@@ -1,7 +1,7 @@
 package com.egova.api.facade;
 
 import com.egova.api.entity.FieldMapping;
-import com.egova.api.model.FileldMappingModel;
+import com.egova.api.model.FieldMappingModel;
 import com.egova.cloud.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,9 +80,9 @@ public interface FieldMappingFacade {
      * @return List<FieldMapping>
      */
     @PostMapping(value = "/parse/model")
-    FileldMappingModel parseModel(@RequestParam("json") String json,
-                                  @RequestParam(value = "root",required = false) String root,
-                                  @RequestParam(value = "collapse",required = false) Boolean collapse);
+    FieldMappingModel parseModel(@RequestParam("json") String json,
+                                 @RequestParam(value = "root",required = false) String root,
+                                 @RequestParam(value = "collapse",required = false) Boolean collapse);
 
     /**
      * 主键删除
@@ -90,7 +90,16 @@ public interface FieldMappingFacade {
      * @param model
      * @return List<FieldMapping>
      */
-    @PostMapping(value = "/insert")
-    void insert(@RequestBody FileldMappingModel model);
+    @PostMapping(value = "/save")
+    void insert(@RequestBody FieldMappingModel model);
+
+    /**
+     * 主键删除
+     *
+     * @param apiId
+     * @return List<FieldMapping>
+     */
+    @GetMapping(value = "/{apiId}/model")
+    FieldMappingModel getModelByApiId(@PathVariable(value = "apiId") String apiId);
 
 }

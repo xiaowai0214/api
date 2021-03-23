@@ -32,6 +32,10 @@ public class FieldMapping extends BaseEntity {
     @Column(name = "apiId")
     private String apiId;
 
+    @Display("原始参数路劲")
+    @Column(name = "originalParamPath")
+    private String originalParamPath;
+
     @Display("参数路劲")
     @Column(name = "paramPath")
     private String paramPath;

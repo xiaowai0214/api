@@ -16,6 +16,8 @@ public class ApiResult {
 
     private String content;
 
+    private String originalContent;
+
     private Map<String,Object> requestHeaders = new HashMap<>();
 
     private Map<String,Object> responseHeaders = new HashMap<>();

@@ -154,6 +154,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (200 != apiResult.getCode() ){
             return apiResult;
         }
+        apiResult.setOriginalContent(apiResult.getContent());
         apiResult.setContent(convert(apiResult.getContent(),apiId));
         return apiResult;
     }
