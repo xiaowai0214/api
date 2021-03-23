@@ -149,7 +149,7 @@ public class JsonPathTest {
                 .filter(p-> listjsonPath.contains(p))
                 .forEach(p-> {
                     System.out.println(p);
-                    String itemValue = JsonPathUtils.readjson(json, p);
+                    Object itemValue = JsonPathUtils.readjson(json, p);
                     map.put(p,itemValue);
                 });
         String s = JsonPathUtils.warpJson(map);
@@ -252,6 +252,31 @@ public class JsonPathTest {
         List<String> paths = spiltPaths(path, list);
         paths.forEach(s-> System.out.println(s));
     }
+
+    @Test
+    public void convert(){
+        String json = "{\n" +
+                "    \"code\":200,\n" +
+                "    \"result\":[\n" +
+                "        {\n" +
+                "            \"id\":\"001\",\n" +
+                "            \"name\":\"一号员工\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\":\"002\",\n" +
+                "            \"name\":\"二号员工\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        List<String> list = new ArrayList<>();
+        Map<String,Object> map = new HashMap<>();
+        map.put("type",JsonPathUtils.readjson(json,"code"));
+        map.put("id",JsonPathUtils.readjson(json,"result[*].id"));
+        String json1 = JsonPathUtils.warpJson(map);
+        System.out.println(json1);
+    }
+
+
 
     private List<String> spiltPaths(String path, List<String> list){
         if (list == null){

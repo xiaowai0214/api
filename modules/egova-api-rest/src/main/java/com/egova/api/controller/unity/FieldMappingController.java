@@ -105,14 +105,18 @@ public class FieldMappingController implements FieldMappingFacade {
 
     @Api
     @Override
-    public List<FieldMapping> parse(@RequestParam String json, @RequestParam String root) {
-        return fieldMappingService.parse(json, root);
+    public List<FieldMapping> parse(@RequestParam String json,
+                                    @RequestParam(required = false) String root,
+                                    @RequestParam(required = false) Boolean collapse) {
+        return fieldMappingService.parse(json, root,collapse);
     }
 
     @Api
     @Override
-    public FileldMappingModel parseModel(@RequestParam String json, @RequestParam String root) {
-        return fieldMappingService.parseModel(json, root);
+    public FileldMappingModel parseModel(@RequestParam String json,
+                                         @RequestParam(required = false) String root,
+                                         @RequestParam(required = false) Boolean collapse) {
+        return fieldMappingService.parseModel(json, root,collapse);
     }
 
     @Api

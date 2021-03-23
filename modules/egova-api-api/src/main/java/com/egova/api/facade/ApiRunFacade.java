@@ -3,10 +3,7 @@ package com.egova.api.facade;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.api.model.ApiResult;
 import com.egova.cloud.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -59,4 +56,14 @@ public interface ApiRunFacade {
      */
     @GetMapping("/output/format/{apiId}")
     Object outputFormat(@PathVariable("apiId") String apiId);
+
+
+    /**
+     * 获取输入参数的jsonpath
+     *
+     * @param json
+     * @return 主键
+     */
+//    @GetMapping("/json/path")
+//    Object jsonPath(@RequestParam("json") String json);
 }

@@ -62,19 +62,27 @@ public interface FieldMappingFacade {
      * 主键删除
      *
      * @param json
+     * @param root 根节点
+     * @param collapse 是否收缩成通配符[*]
      * @return List<FieldMapping>
      */
     @PostMapping(value = "/parse/fields")
-    List<FieldMapping> parse(@RequestParam("json") String json, @RequestParam("root") String root );
+    List<FieldMapping> parse(@RequestParam("json") String json,
+                             @RequestParam(value = "root",required = false) String root,
+                             @RequestParam(value = "collapse",required = false) Boolean collapse);
 
     /**
      * 主键删除
      *
      * @param json
+     * @param root 根节点
+     * @param collapse 是否收缩成通配符[*]
      * @return List<FieldMapping>
      */
     @PostMapping(value = "/parse/model")
-    FileldMappingModel parseModel(@RequestParam("json") String json, @RequestParam("root") String root );
+    FileldMappingModel parseModel(@RequestParam("json") String json,
+                                  @RequestParam(value = "root",required = false) String root,
+                                  @RequestParam(value = "collapse",required = false) Boolean collapse);
 
     /**
      * 主键删除

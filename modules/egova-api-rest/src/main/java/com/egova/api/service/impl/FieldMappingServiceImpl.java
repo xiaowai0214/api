@@ -13,6 +13,7 @@ import com.egova.model.QueryModel;
 import com.flagwind.commons.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -46,27 +47,30 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
     }
 
     @Override
-    public List<FieldMapping> parse(String json, String root) {
+    public List<FieldMapping> parse(String json, String root, Boolean collapse) {
         List<FieldMapping> fieldMappings = new ArrayList<>();
         List<String> paths = JsonPathUtils.getListJsonPathByJsonString(json);
+        if (BooleanUtils.isTrue(collapse)){
+            paths = JsonPathUtils.distinctPath(paths);
+        }
         paths.stream()
                 .filter(path-> StringUtils.isEmpty(root) || path.startsWith(root))
                 .forEach(path->{
                     FieldMapping fieldMapping = new FieldMapping();
-                    String value = JsonPathUtils.readjson(json, path);
+                    Object value = JsonPathUtils.readjson(json, path);
                     fieldMapping.setName(StringUtils.isEmpty(root) ? path : path.substring(root.length() + 1));
-                    fieldMapping.setValueContent(value);
+                    fieldMapping.setValueContent(null == value ? null : value.toString());
                     fieldMappings.add(fieldMapping);
                 });
         return fieldMappings;
     }
 
     @Override
-    public FileldMappingModel parseModel(String json, String root) {
+    public FileldMappingModel parseModel(String json, String root, Boolean collapse) {
         FileldMappingModel model = new FileldMappingModel();
         model.setOrigionJson(json);
         model.setConvertRoot(root);
-        List<FieldMapping> fieldMappings = parse(json, root);
+        List<FieldMapping> fieldMappings = parse(json, root,collapse);
         model.setFieldMappings(fieldMappings);
         Map<String,Object> map = new HashMap<>();
         fieldMappings

@@ -18,7 +18,6 @@ import com.egova.api.util.JsonPathUtils;
 import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
 import com.flagwind.commons.Monment;
-import com.flagwind.commons.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
@@ -321,7 +320,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         Map<String,Object> map = new HashMap<>();
         fieldMappings.stream()
                 .forEach(fieldMapping -> {
-                    String value = JsonPathUtils.readjson(responseContent,fieldMapping.getParamPath());
+                    Object value = JsonPathUtils.readjson(responseContent,fieldMapping.getParamPath());
                     Object transform = transform(value, fieldMapping.getValueType());
                     map.put(fieldMapping.getName(),transform);
                 });
@@ -329,23 +328,23 @@ public class ApiRunServiceImpl implements ApiRunService {
 
     }
 
-    public Object transform(String input, DataType dataType){
-        if (StringUtils.isEmpty(input)){
+    public Object transform(Object input, DataType dataType){
+        if (null == input){
             return null;
         }
         switch (dataType){
             case String:
                 return input;
             case Long:
-                return Long.valueOf(input);
+                return Long.valueOf(input.toString());
             case Float:
-                return Float.valueOf(input);
+                return Float.valueOf(input.toString());
             case Boolean:
-                return Boolean.valueOf(input);
+                return Boolean.valueOf(input.toString());
             case Integer:
-                return Integer.valueOf(input);
+                return Integer.valueOf(input.toString());
             case Timestamp:
-                return new Timestamp(new Monment(input, "yyyy-MM-dd HH:mm:ss").getTime());
+                return new Timestamp(new Monment(input.toString(), "yyyy-MM-dd HH:mm:ss").getTime());
         }
         return null;
     }
