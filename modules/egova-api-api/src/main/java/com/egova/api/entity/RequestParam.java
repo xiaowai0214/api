@@ -57,8 +57,8 @@ public class RequestParam extends BaseEntity {
     @Column(name = "valueContent")
     private String valueContent;
 
-    @Display("是否启用")
-    @Column(name = "enabled")
-    private boolean enabled;
+    @Display("是否禁用")
+    @Column(name = "disabled")
+    private boolean disabled;
 
 }

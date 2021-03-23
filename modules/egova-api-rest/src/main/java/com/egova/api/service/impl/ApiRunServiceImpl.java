@@ -20,6 +20,7 @@ import com.egova.lang.ExtrasHashMap;
 import com.flagwind.commons.Monment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -67,11 +68,11 @@ public class ApiRunServiceImpl implements ApiRunService {
         Map<String, Object> formParamMap = new HashMap<>();
         List<Map<String, Object>> queryParams = new ArrayList<>();
         if (!CollectionUtils.isEmpty(model.getRequestParams())) {
-            model.getRequestParams().stream().filter(p -> p.getType() == RequestParamType.QueryString)
+            model.getRequestParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.QueryString)
                     .forEach(requestParam -> {
                         queryParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
-            model.getRequestParams().stream().filter(p -> p.getType() == RequestParamType.FormData)
+            model.getRequestParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.FormData)
                     .forEach(requestParam -> {
                         formParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
