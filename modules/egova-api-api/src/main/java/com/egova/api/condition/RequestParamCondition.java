@@ -45,5 +45,8 @@ public class RequestParamCondition implements Serializable {
     @ConditionOperator(name = "valueType", operator = ClauseOperator.Equal)
     private Integer valueType;
 
+    @Display("是否启用")
+    @ConditionOperator(name = "enabled", operator = ClauseOperator.Equal)
+    private Boolean enabled;
 
 }

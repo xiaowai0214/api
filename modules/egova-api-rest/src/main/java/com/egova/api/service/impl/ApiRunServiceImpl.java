@@ -69,11 +69,11 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (!CollectionUtils.isEmpty(model.getRequestParams())) {
             model.getRequestParams().stream().filter(p -> p.getType() == RequestParamType.QueryString)
                     .forEach(requestParam -> {
-                        queryParamMap.put(requestParam.getName(), requestParam.getValueContent());
+                        queryParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
             model.getRequestParams().stream().filter(p -> p.getType() == RequestParamType.FormData)
                     .forEach(requestParam -> {
-                        formParamMap.put(requestParam.getName(), requestParam.getValueContent());
+                        formParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
 
 
@@ -346,6 +346,6 @@ public class ApiRunServiceImpl implements ApiRunService {
             case Timestamp:
                 return new Timestamp(new Monment(input.toString(), "yyyy-MM-dd HH:mm:ss").getTime());
         }
-        return null;
+        return input.toString();
     }
 }

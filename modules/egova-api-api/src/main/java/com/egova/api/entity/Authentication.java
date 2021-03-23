@@ -40,4 +40,13 @@ public class Authentication extends BaseEntity {
     @Column(name = "content")
     private String content;
 
+    @Display("存放位置，【Header】【queryString】")
+    @Column(name = "location")
+    private String location;
+
+    @Display("存放token的key")
+    @Column(name = "locationKey")
+    private String locationKey;
+
+
 }

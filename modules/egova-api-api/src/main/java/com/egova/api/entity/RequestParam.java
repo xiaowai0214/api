@@ -1,5 +1,6 @@
 package com.egova.api.entity;
 
+import com.egova.api.enums.DataType;
 import com.egova.api.enums.RequestParamType;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
@@ -50,10 +51,14 @@ public class RequestParam extends BaseEntity {
 
     @Display("值类型")
     @Column(name = "valueType")
-    private Integer valueType;
+    private DataType valueType;
 
     @Display("值内容")
     @Column(name = "valueContent")
     private String valueContent;
+
+    @Display("是否启用")
+    @Column(name = "enabled")
+    private boolean enabled;
 
 }

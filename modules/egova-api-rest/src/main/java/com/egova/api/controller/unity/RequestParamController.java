@@ -76,6 +76,12 @@ public class RequestParamController implements RequestParamFacade {
         return requestParamService.deleteById(id);
     }
 
+    @Api
+    @Override
+    public List<RequestParam> apiId(@PathVariable("apiId") String apiId) {
+        return requestParamService.apiId(apiId);
+    }
+
     /**
      * 分页查询
      *

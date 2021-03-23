@@ -36,6 +36,10 @@ public class RequestHeader extends BaseEntity {
     @Column(name = "value")
     private String value;
 
+    @Display("值")
+    @Column(name = "text")
+    private String text;
+
     @Display("必填")
     @Column(name = "required")
     private boolean required;
