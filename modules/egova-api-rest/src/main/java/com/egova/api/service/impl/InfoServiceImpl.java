@@ -15,7 +15,6 @@ import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
 import com.egova.entity.Category;
 import com.egova.exception.ExceptionUtils;
-import com.egova.json.utils.JsonUtils;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import com.egova.persistent.ClauseBuilder;
@@ -254,7 +253,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                 requestParam.setName(path);
                 requestParam.setText(path);
                 Object readjson = JsonPathUtils.readjson(json, path);
-                requestParam.setValueContent(null == readjson ? null : JsonUtils.serialize(readjson));
+                requestParam.setValueContent(null == readjson ? null : readjson.toString());
                 jsonParams.add(requestParam);
             });
             requestParamRepository.insertList(jsonParams);
