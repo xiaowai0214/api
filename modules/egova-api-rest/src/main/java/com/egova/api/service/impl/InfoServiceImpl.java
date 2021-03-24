@@ -22,6 +22,7 @@ import com.egova.persistent.ClauseBuilder;
 import com.egova.security.UserContext;
 import com.flagwind.commons.StringUtils;
 import com.flagwind.persistent.model.SingleClause;
+import com.flagwind.persistent.model.Sorting;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,38 +66,43 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     @Override
+    public List<Info> list(InfoCondition condition) {
+        return query(condition, Sorting.descending("createTime"));
+    }
+
+    @Override
     public String insert(Info entity) {
         entity.setCreator(UserContext.username());
         entity.setCreateTime(new Timestamp(System.currentTimeMillis()));
 
         String insert = super.insert(entity);
-        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),insert,entity.getName(), TrendsType.APi, OperateType.Insert));
+        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), insert, entity.getName(), TrendsType.APi, OperateType.Insert));
         return insert;
     }
 
     @Override
     public void update(Info entity) {
         super.update(entity);
-        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),entity.getId(),entity.getName(), TrendsType.APi, OperateType.Update));
+        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Update));
     }
 
     @Override
     public void modify(String id, HashMap<String, Object> map) {
-        super.modify(map, SingleClause.equal("id",id));
+        super.modify(map, SingleClause.equal("id", id));
         Info entity = infoRepository.getById(id);
-        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),entity.getId(),entity.getName(), TrendsType.APi, OperateType.Update));
+        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Update));
     }
 
     @Override
     public int deleteById(String id) {
         Info entity = infoRepository.getById(id);
         super.deleteById(id);
-        trendsFacade.insert(new Trends(entity.getProjectId(),entity.getCategoryId(),entity.getId(),entity.getName(), TrendsType.APi, OperateType.Delete));
+        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Delete));
         return 1;
     }
 
     @Override
-    public List<Category> tree(String categoryId,String projectId) {
+    public List<Category> tree(String categoryId, String projectId) {
         List<String> ids = Lists.newArrayList();
         List<Category> tree = Optional.ofNullable(StringUtils.isBlank(categoryId) ? null : categoryId)
                 .map(g -> baseMicroServiceWrapper.getCategoryTreeById(g, ids))
@@ -104,7 +110,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
 
 
         Map<String, List<Info>> group = infoRepository
-                .categoryIds(ids,projectId).stream()
+                .categoryIds(ids, projectId).stream()
                 .collect(Collectors.groupingBy(Info::getCategoryId));
 
         tree.forEach(category -> baseMicroServiceWrapper.setCategoryNodeData("apis", category, group));
@@ -114,7 +120,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     @Transactional(rollbackFor = {Exception.class})
     @Override
     public void update(ApiInfoModel apiInfoModel) {
-        Optional.ofNullable(apiInfoModel.getInfo().getId()).orElseThrow(()-> ExceptionUtils.api("更新时apiId不能为空"));
+        Optional.ofNullable(apiInfoModel.getInfo().getId()).orElseThrow(() -> ExceptionUtils.api("更新时apiId不能为空"));
         //0. api
         infoRepository.update(apiInfoModel.getInfo());
 
@@ -138,9 +144,9 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     private void saveConvertConfig(ApiInfoModel model) {
-        convertConfigRepository.delete(SingleClause.equal("apiId",model.getInfo().getId()));
+        convertConfigRepository.delete(SingleClause.equal("apiId", model.getInfo().getId()));
         ConvertConfig convertConfig = model.getConvertConfig();
-        if (convertConfig != null){
+        if (convertConfig != null) {
             convertConfig.setApiId(model.getInfo().getId());
             convertConfig.setId(UUID.randomUUID().toString());
             convertConfigRepository.insert(convertConfig);
@@ -148,13 +154,13 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     private void saveFieldMapping(ApiInfoModel model) {
-        fieldMappingRepository.delete(SingleClause.equal("apiId",model.getInfo().getId()));
+        fieldMappingRepository.delete(SingleClause.equal("apiId", model.getInfo().getId()));
         model.getFieldMappings()
                 .forEach(fieldMapping -> {
                     fieldMapping.setId(UUID.randomUUID().toString());
                     fieldMapping.setApiId(model.getInfo().getId());
                 });
-        if (!CollectionUtils.isEmpty(model.getFieldMappings())){
+        if (!CollectionUtils.isEmpty(model.getFieldMappings())) {
             fieldMappingRepository.insertList(model.getFieldMappings());
         }
     }
@@ -164,21 +170,21 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         ApiInfoModel apiInfoModel = new ApiInfoModel();
         Info info = Optional.ofNullable(infoRepository.getById(id)).orElseThrow(() -> ExceptionUtils.api("api信息为空"));
         apiInfoModel.setInfo(info);
-        Optional.ofNullable(requestHeaderRepository.query(SingleClause.equal("belongId",id))).ifPresent(headers-> apiInfoModel.setRequestHeaders(headers));
-        Optional.ofNullable(requestParamRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setRequestParams(headers));
-        Optional.ofNullable(eventScriptRepository.query(SingleClause.equal("apiId",id))).ifPresent(headers-> apiInfoModel.setEventScripts(headers));
-        Optional.ofNullable(authenticationRepository.single("projectId",info.getProjectId())).ifPresent(authentication-> apiInfoModel.setAuthentication(authentication));
-        Optional.ofNullable(convertConfigRepository.single("apiId",id)).ifPresent(convertConfig-> apiInfoModel.setConvertConfig(convertConfig));
-        Optional.ofNullable(fieldMappingRepository.query(SingleClause.equal("apiId",id))).ifPresent(fieldMappings-> apiInfoModel.setFieldMappings(fieldMappings));
-        if (info.getRequestBodyType() == RequestBodyType.Json){
+        Optional.ofNullable(requestHeaderRepository.query(SingleClause.equal("belongId", id))).ifPresent(headers -> apiInfoModel.setRequestHeaders(headers));
+        Optional.ofNullable(requestParamRepository.query(SingleClause.equal("apiId", id))).ifPresent(headers -> apiInfoModel.setRequestParams(headers));
+        Optional.ofNullable(eventScriptRepository.query(SingleClause.equal("apiId", id))).ifPresent(headers -> apiInfoModel.setEventScripts(headers));
+        Optional.ofNullable(authenticationRepository.single("projectId", info.getProjectId())).ifPresent(authentication -> apiInfoModel.setAuthentication(authentication));
+        Optional.ofNullable(convertConfigRepository.single("apiId", id)).ifPresent(convertConfig -> apiInfoModel.setConvertConfig(convertConfig));
+        Optional.ofNullable(fieldMappingRepository.query(SingleClause.equal("apiId", id))).ifPresent(fieldMappings -> apiInfoModel.setFieldMappings(fieldMappings));
+        if (info.getRequestBodyType() == RequestBodyType.Json) {
             //包装为json
             String json = "";
-            Map<String,Object> map = new HashMap<>();
-            requestParamRepository.query(SingleClause.equal("apiId",id))
+            Map<String, Object> map = new HashMap<>();
+            requestParamRepository.query(SingleClause.equal("apiId", id))
                     .stream()
-                    .filter(p-> p.getType() == RequestParamType.Json)
+                    .filter(p -> p.getType() == RequestParamType.Json)
                     .forEach(requestParam -> {
-                        map.put(requestParam.getName(),requestParam.getValueContent());
+                        map.put(requestParam.getName(), requestParam.getValueContent());
                     });
             json = JsonPathUtils.warpJson(map);
             apiInfoModel.setJson(json);
@@ -188,7 +194,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
 
     private void saveAuthentication(ApiInfoModel apiInfoModel) {
         authenticationRepository.delete(SingleClause.equal("projectId", apiInfoModel.getInfo().getProjectId()));
-        if (apiInfoModel.getAuthentication() != null ){
+        if (apiInfoModel.getAuthentication() != null) {
             apiInfoModel.getAuthentication().setProjectId(apiInfoModel.getInfo().getProjectId());
             apiInfoModel.getAuthentication().setId(UUID.randomUUID().toString());
             authenticationRepository.insert(apiInfoModel.getAuthentication());
@@ -197,8 +203,8 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
 
     private void saveScripts(ApiInfoModel apiInfoModel) {
         eventScriptRepository.delete(SingleClause.equal("apiId", apiInfoModel.getInfo().getId()));
-        if (!CollectionUtils.isEmpty(apiInfoModel.getEventScripts())){
-            apiInfoModel.getEventScripts().forEach(p-> {
+        if (!CollectionUtils.isEmpty(apiInfoModel.getEventScripts())) {
+            apiInfoModel.getEventScripts().forEach(p -> {
                 p.setApiId(apiInfoModel.getInfo().getId());
                 p.setId(UUID.randomUUID().toString());
             });
@@ -212,8 +218,8 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                 .equal("scope", RequestScope.Api)
                 .toClause()
         );
-        if (!CollectionUtils.isEmpty(apiInfoModel.getRequestHeaders())){
-            apiInfoModel.getRequestHeaders().forEach(p-> {
+        if (!CollectionUtils.isEmpty(apiInfoModel.getRequestHeaders())) {
+            apiInfoModel.getRequestHeaders().forEach(p -> {
                 p.setBelongId(apiInfoModel.getInfo().getId());
                 p.setScope(RequestScope.Api);
                 p.setId(UUID.randomUUID().toString());
@@ -228,7 +234,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                 .toClause()
         );
         Info info = apiInfoModel.getInfo();
-        switch (info.getMethod()){
+        switch (info.getMethod()) {
             case GET:
             case DELETE:
                 //GET 默认只有queryString 参数
@@ -237,22 +243,22 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
             case POST:
             case PUT:
                 saveQueryStringParams(apiInfoModel);
-                if (info.getRequestBodyType() == RequestBodyType.Form){
+                if (info.getRequestBodyType() == RequestBodyType.Form) {
                     saveFormDataParams(apiInfoModel);
-                }else if (info.getRequestBodyType() == RequestBodyType.Json){
+                } else if (info.getRequestBodyType() == RequestBodyType.Json) {
                     saveJsonParams(apiInfoModel);
                 }
                 break;
         }
     }
 
-    private void saveQueryStringParams(ApiInfoModel apiInfoModel){
+    private void saveQueryStringParams(ApiInfoModel apiInfoModel) {
         List<RequestParam> qureyStrings = apiInfoModel.getRequestParams()
                 .stream().filter(requestParam -> requestParam.getType() == RequestParamType.QueryString)
                 .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(qureyStrings)){
+        if (!CollectionUtils.isEmpty(qureyStrings)) {
             qureyStrings
-                    .forEach(p-> {
+                    .forEach(p -> {
                         p.setApiId(apiInfoModel.getInfo().getId());
                         p.setId(UUID.randomUUID().toString());
                     });
@@ -260,25 +266,25 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         }
     }
 
-    private void saveFormDataParams(ApiInfoModel apiInfoModel){
+    private void saveFormDataParams(ApiInfoModel apiInfoModel) {
         List<RequestParam> formParams = apiInfoModel.getRequestParams()
                 .stream().filter(requestParam -> requestParam.getType() == RequestParamType.FormData)
                 .collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(formParams)){
-            formParams.forEach(p-> {
-                        p.setApiId(apiInfoModel.getInfo().getId());
-                        p.setId(UUID.randomUUID().toString());
-                    });
+        if (!CollectionUtils.isEmpty(formParams)) {
+            formParams.forEach(p -> {
+                p.setApiId(apiInfoModel.getInfo().getId());
+                p.setId(UUID.randomUUID().toString());
+            });
             requestParamRepository.insertList(formParams);
         }
     }
 
-    private void saveJsonParams(ApiInfoModel apiInfoModel){
-        if (!StringUtils.isEmpty(apiInfoModel.getJson())){
+    private void saveJsonParams(ApiInfoModel apiInfoModel) {
+        if (!StringUtils.isEmpty(apiInfoModel.getJson())) {
             List<RequestParam> jsonParams = new ArrayList<>();
             String json = apiInfoModel.getJson();
             List<String> jsonPaths = JsonPathUtils.getListJsonPathByJsonString(json);
-            jsonPaths.forEach(path->{
+            jsonPaths.forEach(path -> {
                 RequestParam requestParam = new RequestParam();
                 requestParam.setId(UUID.randomUUID().toString());
                 requestParam.setType(RequestParamType.Json);

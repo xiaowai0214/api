@@ -29,4 +29,6 @@ public interface InfoService extends InfoFacade {
      */
     int deleteByIds(List<String> ids);
 
+    List<Info> list(InfoCondition condition);
+
 }
