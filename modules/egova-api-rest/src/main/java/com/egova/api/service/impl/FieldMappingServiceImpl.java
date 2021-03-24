@@ -5,6 +5,7 @@ import com.egova.api.domain.ConvertConfigRepository;
 import com.egova.api.domain.FieldMappingRepository;
 import com.egova.api.entity.ConvertConfig;
 import com.egova.api.entity.FieldMapping;
+import com.egova.api.model.FieldMappingBase;
 import com.egova.api.model.FieldMappingModel;
 import com.egova.api.service.FieldMappingService;
 import com.egova.api.util.JsonPathUtils;
@@ -51,20 +52,20 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
     }
 
     @Override
-    public List<FieldMapping> parse(String json, String root, Boolean collapse) {
+    public List<FieldMapping> parse(FieldMappingBase fieldMappingBase) {
         List<FieldMapping> fieldMappings = new ArrayList<>();
-        List<String> paths = JsonPathUtils.getListJsonPathByJsonString(json);
-        if (BooleanUtils.isTrue(collapse)){
+        List<String> paths = JsonPathUtils.getListJsonPathByJsonString(fieldMappingBase.getOriginalJson());
+        if (BooleanUtils.isTrue(fieldMappingBase.getCollapse())){
             paths = JsonPathUtils.distinctPath(paths);
         }
         paths.stream()
-                .filter(path-> StringUtils.isEmpty(root) || path.startsWith(root))
+                .filter(path-> StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) || path.startsWith(fieldMappingBase.getConvertRoot()))
                 .forEach(path->{
                     FieldMapping fieldMapping = new FieldMapping();
                     fieldMapping.setOriginalParamPath(path);
                     fieldMapping.setParamPath(path);
-                    Object value = JsonPathUtils.readjson(json, path);
-                    fieldMapping.setName(StringUtils.isEmpty(root) ? path : path.substring(root.length() + 1));
+                    Object value = JsonPathUtils.readjson(fieldMappingBase.getOriginalJson(), path);
+                    fieldMapping.setName(StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) ? path : path.substring(fieldMappingBase.getConvertRoot().length() + 1));
                     fieldMapping.setValueContent(null == value ? null : value.toString());
                     fieldMappings.add(fieldMapping);
                 });
@@ -72,11 +73,11 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
     }
 
     @Override
-    public FieldMappingModel parseModel(String json, String root, Boolean collapse) {
+    public FieldMappingModel parseModel(FieldMappingBase fieldMappingBase) {
         FieldMappingModel model = new FieldMappingModel();
-        model.setOriginalJson(json);
-        model.setConvertRoot(root);
-        List<FieldMapping> fieldMappings = parse(json, root,collapse);
+        model.setOriginalJson(fieldMappingBase.getOriginalJson());
+        model.setConvertRoot(fieldMappingBase.getConvertRoot());
+        List<FieldMapping> fieldMappings = parse(fieldMappingBase);
         model.setFieldMappings(fieldMappings);
         Map<String,Object> map = new HashMap<>();
         fieldMappings

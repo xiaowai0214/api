@@ -7,17 +7,10 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class FieldMappingModel {
-    private String apiId;
+public class FieldMappingModel extends FieldMappingBase{
 
     private List<FieldMapping> fieldMappings;
 
     private ConvertConfig convertConfig;
-
-    private String originalJson;
-
-    private String convertRoot;
-
-    private String newJson;
 
 }

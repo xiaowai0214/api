@@ -1,5 +1,6 @@
 package com.egova.api.controller.unity;
 
+import com.egova.api.model.FieldMappingBase;
 import com.egova.api.model.FieldMappingModel;
 import com.egova.web.annotation.Api;
 import com.egova.web.annotation.RequestDecorating;
@@ -105,18 +106,14 @@ public class FieldMappingController implements FieldMappingFacade {
 
     @Api
     @Override
-    public List<FieldMapping> parse(@RequestParam String json,
-                                    @RequestParam(required = false) String root,
-                                    @RequestParam(required = false) Boolean collapse) {
-        return fieldMappingService.parse(json, root,collapse);
+    public List<FieldMapping> parse(@RequestBody FieldMappingBase fieldMappingBase) {
+        return fieldMappingService.parse(fieldMappingBase);
     }
 
     @Api
     @Override
-    public FieldMappingModel parseModel(@RequestParam String json,
-                                        @RequestParam(required = false) String root,
-                                        @RequestParam(required = false) Boolean collapse) {
-        return fieldMappingService.parseModel(json, root,collapse);
+    public FieldMappingModel parseModel(@RequestBody FieldMappingBase fieldMappingBase) {
+        return fieldMappingService.parseModel(fieldMappingBase);
     }
 
     @Api
