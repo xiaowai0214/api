@@ -136,6 +136,13 @@ public class JsonPathUtils {
         return generateRealPath(map);
     }
 
+    public static List<String> generateRealPath(List<String> paths){
+        //将路径的[num] 替换成 [*] 并去重
+        List<String> distinctPaths = distinctPath(paths);
+        Map<String, List<Integer>> map = pathMap(distinctPaths);
+        return generateRealPath(map);
+    }
+
     public static List<String> generateRealPath(Map<String, List<Integer>> map) {
         List<String> list = new ArrayList<>();
 

@@ -18,6 +18,7 @@ import com.egova.api.util.JsonPathUtils;
 import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
 import com.flagwind.commons.Monment;
+import com.flagwind.commons.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -40,6 +41,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -319,13 +321,48 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (CollectionUtils.isEmpty(fieldMappings)){
             return responseContent;
         }
+        List<String> allPaths = JsonPathUtils.getListJsonPathByJsonString(responseContent);
+        List<String> outputs = fieldMappings.stream().filter(p -> !StringUtils.isEmpty(p.getName()))
+                .map(FieldMapping::getName)
+                .collect(Collectors.toList());
+//        List<String> list = JsonPathUtils.generateRealPath(allPaths);
+
         Map<String,Object> map = new HashMap<>();
+//        list.stream()
+//                .forEach(
+//                        path->{
+//                            String s = path.replaceAll("[^[0-9]]", "*");
+//                            FieldMapping fieldMapping = fieldMappings.stream()
+//                                    .filter(f -> StringUtils.equals(f.getName(), path))
+//                                    .findFirst()
+//                                    .orElse(null);
+//                            Object value = JsonPathUtils.readjson(responseContent,path);
+//                            Object transform = transform(value, fieldMapping.getValueType());
+//                            map.put(fieldMapping.getName(),transform);
+//                        }
+//                );
+
         fieldMappings.stream()
+                .filter(p -> !StringUtils.isEmpty(p.getName()))
                 .forEach(fieldMapping -> {
                     Object value = JsonPathUtils.readjson(responseContent,fieldMapping.getParamPath());
-                    Object transform = transform(value, fieldMapping.getValueType());
-                    map.put(fieldMapping.getName(),transform);
+                    if (fieldMapping.getName().contains("*") && value instanceof net.minidev.json.JSONArray){
+                        net.minidev.json.JSONArray jsonArray = (net.minidev.json.JSONArray)value;
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            String item = fieldMapping.getName().replaceAll("[*]",String.valueOf(i));
+                            value = jsonArray.get(i);
+                            Object transform = transform(value, fieldMapping.getValueType());
+                            map.put(item,transform);
+                        }
+                    }else {
+                        Object transform = transform(value, fieldMapping.getValueType());
+                        map.put(fieldMapping.getName(),transform);
+                    }
+
+
                 });
+
+
         return JsonPathUtils.warpJson(map);
 
     }
