@@ -2,6 +2,7 @@ package com.egova.api.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import com.egova.json.utils.JsonUtils;
 import com.flagwind.commons.StringUtils;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -20,7 +21,7 @@ public class JsonPathUtils {
 
     public static List<String> getListJsonPath(JSONObject jsonObject) {
 
-        List<String> jsonPaths= JSONPath.paths(jsonObject).keySet().stream().collect(Collectors.toList());
+        List<String> jsonPaths= JSONPathEnhanced.paths(jsonObject).keySet().stream().collect(Collectors.toList());
         List<String> parentNode=new ArrayList<>();
         //根节点
         parentNode.add("/");
@@ -90,7 +91,7 @@ public class JsonPathUtils {
         jsonPathMap.forEach((k,v)->{
             JSONPath.set(jsonObject,k,v);
         });
-        return jsonObject.toJSONString();
+        return JsonUtils.serialize(jsonObject);
     }
 
     public static String warpJson(List<String> paths , String json){

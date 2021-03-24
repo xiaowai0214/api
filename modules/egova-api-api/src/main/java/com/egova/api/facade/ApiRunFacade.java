@@ -15,7 +15,7 @@ public interface ApiRunFacade {
 
 
     /**
-     * 保存
+     * 运行
      *
      * @param apiId apiId
      * @param model api项目表
@@ -26,7 +26,7 @@ public interface ApiRunFacade {
     String run(@PathVariable("apiId") String apiId , @RequestBody ApiInfoModel model);
 
     /**
-     * 保存
+     * 运行
      *
      * @param apiId apiId
      * @param map 参数
@@ -37,7 +37,7 @@ public interface ApiRunFacade {
     String run(@PathVariable("apiId") String apiId , @RequestBody HashMap<String,Object> map);
 
     /**
-     * 保存
+     * 运行
      *
      * @param apiId apiId
      * @param model api项目表

@@ -284,17 +284,19 @@ public class JsonPathTest {
         System.out.println(ss);
         System.out.println(JsonUtils.serialize(ss));
         String path = "{\n" +
-                "  \"username\": \"admin\",\n" +
+                "  \"username\": null,\n" +
                 "  \"password\": \"123456\",\n" +
                 "  \"grant_type\": \"password\",\n" +
                 "  \"client_id\": \"unity-client\",\n" +
                 "  \"client_secret\": \"unity\"\n" +
                 "}";
         List<String> list = JsonPathUtils.getListJsonPathByJsonString(path);
+
+
         Map<String,Object> map = new HashMap<>();
         list.forEach(s->{
-            System.out.println(s);
-            System.out.println(JsonPathUtils.readjson(path,s));
+//            System.out.println(s);
+//            System.out.println(JsonPathUtils.readjson(path,s));
             map.put(s,JsonPathUtils.readjson(path,s));
         });
         String json = JsonPathUtils.warpJson(map);
