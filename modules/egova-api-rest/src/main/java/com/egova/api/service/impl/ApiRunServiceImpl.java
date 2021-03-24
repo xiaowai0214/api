@@ -335,7 +335,7 @@ public class ApiRunServiceImpl implements ApiRunService {
             return null;
         }
         if (dataType == null){
-            return input.toString();
+            return input;
         }
         switch (dataType){
             case String:

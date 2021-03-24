@@ -23,12 +23,13 @@ public class ApiRunController implements ApiRunFacade {
 
     private final ApiRunService apiRunService;
 
-//    @Api
+    @Api
     @Override
     public String run(@PathVariable String apiId, @RequestBody ApiInfoModel model) {
         return apiRunService.run(apiId,model);
     }
 
+    @Api
     @Override
     public String run(@PathVariable String apiId, @RequestBody HashMap<String, Object> map) {
         return apiRunService.run(apiId,map);
