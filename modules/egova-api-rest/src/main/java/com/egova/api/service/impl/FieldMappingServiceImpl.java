@@ -65,7 +65,8 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
                     fieldMapping.setOriginalParamPath(path);
                     fieldMapping.setParamPath(path);
                     Object value = JsonPathUtils.readjson(fieldMappingBase.getOriginalJson(), path);
-                    fieldMapping.setName(StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) ? path : path.substring(fieldMappingBase.getConvertRoot().length() + 1));
+//                    fieldMapping.setName(StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) ? path : path.substring(fieldMappingBase.getConvertRoot().length() + 1));
+                    fieldMapping.setName(path);
                     fieldMapping.setValueContent(null == value ? null : value.toString());
                     fieldMappings.add(fieldMapping);
                 });
@@ -77,6 +78,7 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
         FieldMappingModel model = new FieldMappingModel();
         model.setOriginalJson(fieldMappingBase.getOriginalJson());
         model.setConvertRoot(fieldMappingBase.getConvertRoot());
+        model.setCollapse(fieldMappingBase.getCollapse());
         List<FieldMapping> fieldMappings = parse(fieldMappingBase);
         model.setFieldMappings(fieldMappings);
         Map<String,Object> map = new HashMap<>();
