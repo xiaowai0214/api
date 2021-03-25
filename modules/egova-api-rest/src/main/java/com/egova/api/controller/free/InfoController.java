@@ -1,9 +1,11 @@
 package com.egova.api.controller.free;
 
 import com.egova.api.condition.InfoCondition;
+import com.egova.api.entity.FieldMapping;
 import com.egova.api.entity.Info;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.api.service.ApiRunService;
+import com.egova.api.service.FieldMappingService;
 import com.egova.api.service.InfoService;
 import com.egova.entity.Category;
 import com.egova.web.annotation.Api;
@@ -32,6 +34,7 @@ public class InfoController {
 
     private final InfoService infoService;
     private final ApiRunService apiRunService;
+    private final FieldMappingService fieldMappingService;
 
     @Api
     @GetMapping("/tree")
@@ -55,6 +58,12 @@ public class InfoController {
     @PostMapping("/{id}/run")
     public String run(@PathVariable String id, @RequestBody HashMap<String, Object> map) {
         return apiRunService.run(id, map);
+    }
+
+    @Api
+    @GetMapping("/{id}/fields")
+    public List<FieldMapping> fields(@PathVariable String id) {
+        return fieldMappingService.apiId(id);
     }
 
 }
