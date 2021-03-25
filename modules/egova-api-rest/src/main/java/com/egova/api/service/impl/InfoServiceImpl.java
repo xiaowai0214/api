@@ -138,6 +138,8 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
 
         //6.转换字段映射
         saveFieldMapping(apiInfoModel);
+
+        trendsFacade.insert(new Trends(apiInfoModel.getInfo().getProjectId(), apiInfoModel.getInfo().getCategoryId(), apiInfoModel.getInfo().getId(), apiInfoModel.getInfo().getName(), TrendsType.APi, OperateType.Update));
     }
 
     private void saveConvertConfig(ApiInfoModel model) {

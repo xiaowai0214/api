@@ -7,6 +7,7 @@ import com.egova.associative.Associative;
 import com.egova.associative.CategoryNameProvider;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
+import com.egova.security.UserContext;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -84,5 +85,7 @@ public class Trends extends BaseEntity {
         this.apiName = apiName;
         this.type = type;
         this.operateType = operateType;
+        this.creator = UserContext.username();
+        this.createTime = new Timestamp(System.currentTimeMillis());
     }
 }
