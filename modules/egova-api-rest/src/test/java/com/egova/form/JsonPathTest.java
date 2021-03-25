@@ -280,15 +280,80 @@ public class JsonPathTest {
     @Test
     public void wrap(){
 
+        Map<String,Object> map2 = new HashMap<>();
+        map2.put("result[*].code","22");
+        System.out.println(JsonUtils.serialize(map2));
+
         String ss = "user";
         System.out.println(ss);
         System.out.println(JsonUtils.serialize(ss));
         String path = "{\n" +
-                "  \"username\": null,\n" +
-                "  \"password\": \"123456\",\n" +
-                "  \"grant_type\": \"password\",\n" +
-                "  \"client_id\": \"unity-client\",\n" +
-                "  \"client_secret\": \"unity\"\n" +
+                "    \"result\":[\n" +
+                "        {\n" +
+                "            \"icon\":null,\n" +
+                "            \"name\":\"1\",\n" +
+                "            \"id\":\"011\",\n" +
+                "            \"text\":\"软件\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"value\":\"1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\":\"2\",\n" +
+                "            \"icon\":null,\n" +
+                "            \"id\":\"012\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"text\":\"政务\",\n" +
+                "            \"value\":\"2\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"icon\":null,\n" +
+                "            \"name\":\"3\",\n" +
+                "            \"id\":\"013\",\n" +
+                "            \"text\":\"服务\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"value\":\"3\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\":\"4\",\n" +
+                "            \"icon\":null,\n" +
+                "            \"id\":\"014\",\n" +
+                "            \"text\":\"交通\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"value\":\"4\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"icon\":null,\n" +
+                "            \"name\":\"5\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"id\":\"015\",\n" +
+                "            \"text\":\"安防\",\n" +
+                "            \"value\":\"5\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"icon\":null,\n" +
+                "            \"name\":\"6\",\n" +
+                "            \"text\":\"能源\",\n" +
+                "            \"id\":\"016\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"value\":\"6\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\":\"7\",\n" +
+                "            \"icon\":null,\n" +
+                "            \"text\":\"医疗\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"id\":\"017\",\n" +
+                "            \"value\":\"7\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\":\"8\",\n" +
+                "            \"icon\":null,\n" +
+                "            \"id\":\"018\",\n" +
+                "            \"text\":\"金融\",\n" +
+                "            \"tag\":null,\n" +
+                "            \"value\":\"8\"\n" +
+                "        }\n" +
+                "    ]\n" +
                 "}";
         List<String> list = JsonPathUtils.getListJsonPathByJsonString(path);
 

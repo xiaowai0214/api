@@ -69,17 +69,18 @@ public class ApiRunServiceImpl implements ApiRunService {
         Map<String, Object> queryParamMap = new HashMap<>();
         Map<String, Object> formParamMap = new HashMap<>();
         List<Map<String, Object>> queryParams = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(model.getRequestParams())) {
-            model.getRequestParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.QueryString)
+        if (!CollectionUtils.isEmpty(model.getQueryParams())) {
+            model.getQueryParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.QueryString)
                     .forEach(requestParam -> {
                         queryParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
-            model.getRequestParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.FormData)
+        }
+
+        if (!CollectionUtils.isEmpty(model.getFormParams())) {
+            model.getFormParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.FormData)
                     .forEach(requestParam -> {
                         formParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
-
-
         }
 
         // invoke 1/3
@@ -118,7 +119,13 @@ public class ApiRunServiceImpl implements ApiRunService {
     private HttpRequestBase wrapHttpRequest(String apiId, Map<String,Object> requestMap){
         ApiInfoModel apiInfoModel = infoFacade.getApiInfoModel(apiId);
 
-        List<RequestParam> requestParams = apiInfoModel.getRequestParams();
+        List<RequestParam> requestParams = new ArrayList<>();
+        if (CollectionUtils.isEmpty(apiInfoModel.getQueryParams())){
+            requestParams.addAll(apiInfoModel.getQueryParams());
+        }
+        if (CollectionUtils.isEmpty(apiInfoModel.getFormParams())){
+            requestParams.addAll(apiInfoModel.getFormParams());
+        }
         requestParams.forEach(requestParam -> {
             if (requestMap.containsKey(requestParam.getName())){
                 requestParam.setValueContent(requestMap.get(requestParam.getName()).toString());

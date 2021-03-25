@@ -2,10 +2,7 @@ package com.egova.api.service.impl;
 
 import com.egova.api.condition.InfoCondition;
 import com.egova.api.domain.*;
-import com.egova.api.entity.ConvertConfig;
-import com.egova.api.entity.Info;
-import com.egova.api.entity.RequestParam;
-import com.egova.api.entity.Trends;
+import com.egova.api.entity.*;
 import com.egova.api.enums.*;
 import com.egova.api.facade.TrendsFacade;
 import com.egova.api.model.ApiInfoModel;
@@ -170,9 +167,18 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         ApiInfoModel apiInfoModel = new ApiInfoModel();
         Info info = Optional.ofNullable(infoRepository.getById(id)).orElseThrow(() -> ExceptionUtils.api("api信息为空"));
         apiInfoModel.setInfo(info);
+        List<RequestParam> requestParams = requestParamRepository.query(SingleClause.equal("apiId", id));
+        List<EventScript> eventScripts = eventScriptRepository.query(SingleClause.equal("apiId", id));
+
         Optional.ofNullable(requestHeaderRepository.query(SingleClause.equal("belongId", id))).ifPresent(headers -> apiInfoModel.setRequestHeaders(headers));
-        Optional.ofNullable(requestParamRepository.query(SingleClause.equal("apiId", id))).ifPresent(headers -> apiInfoModel.setRequestParams(headers));
-        Optional.ofNullable(eventScriptRepository.query(SingleClause.equal("apiId", id))).ifPresent(headers -> apiInfoModel.setEventScripts(headers));
+        Optional.ofNullable(requestParams).ifPresent(params -> {
+            apiInfoModel.setQueryParams(params.stream().filter(p-> p.getType() == RequestParamType.QueryString).collect(Collectors.toList()));
+            apiInfoModel.setFormParams(params.stream().filter(p-> p.getType() == RequestParamType.FormData).collect(Collectors.toList()));
+        });
+        Optional.ofNullable(eventScripts).ifPresent(scripts -> {
+            apiInfoModel.setPreScripts(scripts.stream().filter(p-> p.getEventType() == EventType.Previous).collect(Collectors.toList()));
+            apiInfoModel.setPostScripts(scripts.stream().filter(p-> p.getEventType() == EventType.Post).collect(Collectors.toList()));
+        });
         Optional.ofNullable(authenticationRepository.single("projectId", info.getProjectId())).ifPresent(authentication -> apiInfoModel.setAuthentication(authentication));
         Optional.ofNullable(convertConfigRepository.single("apiId", id)).ifPresent(convertConfig -> apiInfoModel.setConvertConfig(convertConfig));
         Optional.ofNullable(fieldMappingRepository.query(SingleClause.equal("apiId", id))).ifPresent(fieldMappings -> apiInfoModel.setFieldMappings(fieldMappings));
@@ -202,13 +208,20 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     private void saveScripts(ApiInfoModel apiInfoModel) {
+        List<EventScript> scripts = new ArrayList<>();
+        if (CollectionUtils.isEmpty(apiInfoModel.getPreScripts())){
+            scripts.addAll(apiInfoModel.getPreScripts());
+        }
+        if (CollectionUtils.isEmpty(apiInfoModel.getPostScripts())){
+            scripts.addAll(apiInfoModel.getPostScripts());
+        }
         eventScriptRepository.delete(SingleClause.equal("apiId", apiInfoModel.getInfo().getId()));
-        if (!CollectionUtils.isEmpty(apiInfoModel.getEventScripts())) {
-            apiInfoModel.getEventScripts().forEach(p -> {
+        if (!CollectionUtils.isEmpty(scripts)) {
+            scripts.forEach(p -> {
                 p.setApiId(apiInfoModel.getInfo().getId());
                 p.setId(UUID.randomUUID().toString());
             });
-            eventScriptRepository.insertList(apiInfoModel.getEventScripts());
+            eventScriptRepository.insertList(scripts);
         }
     }
 
@@ -253,7 +266,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     private void saveQueryStringParams(ApiInfoModel apiInfoModel) {
-        List<RequestParam> qureyStrings = apiInfoModel.getRequestParams()
+        List<RequestParam> qureyStrings = apiInfoModel.getQueryParams()
                 .stream().filter(requestParam -> requestParam.getType() == RequestParamType.QueryString)
                 .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(qureyStrings)) {
@@ -267,7 +280,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     }
 
     private void saveFormDataParams(ApiInfoModel apiInfoModel) {
-        List<RequestParam> formParams = apiInfoModel.getRequestParams()
+        List<RequestParam> formParams = apiInfoModel.getFormParams()
                 .stream().filter(requestParam -> requestParam.getType() == RequestParamType.FormData)
                 .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(formParams)) {

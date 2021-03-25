@@ -15,11 +15,27 @@ public class ApiInfoModel {
     */
     private String json;
 
-    private List<RequestParam> requestParams;
+    /*
+     * form参数
+     */
+    private List<RequestParam> formParams;
+
+    /*
+     * queryString参数
+     */
+    private List<RequestParam> queryParams;
 
     private List<RequestHeader> requestHeaders;
 
-    private List<EventScript> eventScripts;
+    /*
+     * 前置脚本
+     */
+    private List<EventScript> preScripts;
+
+    /*
+     * 后置脚本
+     */
+    private List<EventScript> postScripts;
 
     private Authentication authentication;
 
