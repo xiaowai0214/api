@@ -5,11 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.egova.api.authorization.AuthenticationSupplier;
 import com.egova.api.convert.ParamConverter;
 import com.egova.api.domain.AuthenticationRepository;
+import com.egova.api.domain.ConvertConfigRepository;
 import com.egova.api.domain.FieldMappingRepository;
-import com.egova.api.entity.Authentication;
-import com.egova.api.entity.FieldMapping;
-import com.egova.api.entity.Info;
-import com.egova.api.entity.RequestParam;
+import com.egova.api.entity.*;
 import com.egova.api.enums.DataType;
 import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
@@ -56,6 +54,7 @@ public class ApiRunServiceImpl implements ApiRunService {
     private final InfoFacade infoFacade;
     private final AuthenticationRepository authenticationRepository;
     private final FieldMappingRepository fieldMappingRepository;
+    private final ConvertConfigRepository convertConfigRepository;
 
     private HttpRequestBase wrapHttpRequest(String apiId, ApiInfoModel model){
         List<Map<String, Object>> requestHeaders = new ArrayList<>();
@@ -345,6 +344,16 @@ public class ApiRunServiceImpl implements ApiRunService {
     }
 
     public String convert(String responseContent, String apiId) {
+        ConvertConfig convertConfig = Optional.ofNullable(convertConfigRepository.single("apiId", apiId)).orElse(null);
+        if (convertConfig != null && !StringUtils.isAnyBlank(convertConfig.getSuccessCodePath(),convertConfig.getSuccessCode())){
+            Object readjson = JsonPathUtils.readjson(responseContent, convertConfig.getSuccessCodePath());
+            if (readjson == null || !StringUtils.equals(readjson.toString(),convertConfig.getSuccessCode())){
+                log.info("转换配置的成功标识不匹配，不予转换");
+                return null;
+            }
+        }
+
+
         List<FieldMapping> fieldMappings = Optional.ofNullable(fieldMappingRepository.many("apiId", apiId)).orElse(null);
         if (CollectionUtils.isEmpty(fieldMappings)){
             return responseContent;
@@ -353,22 +362,8 @@ public class ApiRunServiceImpl implements ApiRunService {
         List<String> outputs = fieldMappings.stream().filter(p -> !StringUtils.isEmpty(p.getName()))
                 .map(FieldMapping::getName)
                 .collect(Collectors.toList());
-//        List<String> list = JsonPathUtils.generateRealPath(allPaths);
 
         Map<String,Object> map = new HashMap<>();
-//        list.stream()
-//                .forEach(
-//                        path->{
-//                            String s = path.replaceAll("[^[0-9]]", "*");
-//                            FieldMapping fieldMapping = fieldMappings.stream()
-//                                    .filter(f -> StringUtils.equals(f.getName(), path))
-//                                    .findFirst()
-//                                    .orElse(null);
-//                            Object value = JsonPathUtils.readjson(responseContent,path);
-//                            Object transform = transform(value, fieldMapping.getValueType());
-//                            map.put(fieldMapping.getName(),transform);
-//                        }
-//                );
 
         fieldMappings.stream()
                 .filter(p -> !StringUtils.isEmpty(p.getName()))
