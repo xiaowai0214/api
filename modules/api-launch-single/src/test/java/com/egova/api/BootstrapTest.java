@@ -56,7 +56,5 @@ public class BootstrapTest {
                 System.out.println(supply);
             }
         }
-
-
     }
 }
