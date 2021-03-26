@@ -1,6 +1,7 @@
 package com.egova.api.entity;
 
 import com.egova.api.enums.AuthenticationType;
+import com.egova.api.enums.TokenLocationType;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
 import lombok.Data;
@@ -42,7 +43,7 @@ public class Authentication extends BaseEntity {
 
     @Display("存放位置，【Header】【queryString】")
     @Column(name = "location")
-    private String location;
+    private TokenLocationType location;
 
     @Display("存放token的key")
     @Column(name = "locationKey")

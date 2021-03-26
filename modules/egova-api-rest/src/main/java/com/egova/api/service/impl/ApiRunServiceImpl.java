@@ -2,8 +2,11 @@ package com.egova.api.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.egova.api.authorization.AuthenticationSupplier;
 import com.egova.api.convert.ParamConverter;
+import com.egova.api.domain.AuthenticationRepository;
 import com.egova.api.domain.FieldMappingRepository;
+import com.egova.api.entity.Authentication;
 import com.egova.api.entity.FieldMapping;
 import com.egova.api.entity.Info;
 import com.egova.api.entity.RequestParam;
@@ -17,6 +20,7 @@ import com.egova.api.service.ApiRunService;
 import com.egova.api.util.JsonPathUtils;
 import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
+import com.flagwind.application.Application;
 import com.flagwind.commons.Monment;
 import com.flagwind.commons.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -50,14 +54,34 @@ import java.util.stream.Collectors;
 public class ApiRunServiceImpl implements ApiRunService {
 //    private final InfoRepository infoRepository;
     private final InfoFacade infoFacade;
+    private final AuthenticationRepository authenticationRepository;
     private final FieldMappingRepository fieldMappingRepository;
 
     private HttpRequestBase wrapHttpRequest(String apiId, ApiInfoModel model){
-        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
-
-        // request headers
         List<Map<String, Object>> requestHeaders = new ArrayList<>();
         Map<String, String> requestHeaderMap = new HashMap<>();
+        Map<String, Object> queryParamMap = new HashMap<>();
+        Map<String, Object> formParamMap = new HashMap<>();
+
+        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
+        Authentication authentication = Optional.ofNullable(authenticationRepository.single("projectId", apiInfo.getProjectId())).orElse(null);
+        if (!(authentication == null || StringUtils.isBlank(authentication.getContent()))){
+            List<AuthenticationSupplier> authenticationSuppliers = Application.resolveAll(AuthenticationSupplier.class);
+            for (AuthenticationSupplier authenticationSupplier : authenticationSuppliers) {
+                if (authenticationSupplier.match(authentication.getType())){
+                    String token = authenticationSupplier.supply(apiId);
+                    switch (authentication.getLocation()){
+                        case Request_Header:
+                            requestHeaderMap.put(authentication.getLocationKey(),token);
+                            break;
+                        case Request_Url:
+                            queryParamMap.put(authentication.getLocationKey(),token);
+                    }
+                }
+            }
+        }
+
+        // request headers
         if (!CollectionUtils.isEmpty(model.getRequestHeaders())) {
             model.getRequestHeaders().forEach(header -> {
                 requestHeaders.add(ExtrasHashMap.newStringMap().add(header.getName(), header.getValue()));
@@ -66,9 +90,6 @@ public class ApiRunServiceImpl implements ApiRunService {
         }
 
         // query param
-        Map<String, Object> queryParamMap = new HashMap<>();
-        Map<String, Object> formParamMap = new HashMap<>();
-        List<Map<String, Object>> queryParams = new ArrayList<>();
         if (!CollectionUtils.isEmpty(model.getQueryParams())) {
             model.getQueryParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.QueryString)
                     .forEach(requestParam -> {

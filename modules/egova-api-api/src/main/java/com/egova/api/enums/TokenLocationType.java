@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum TokenLocationType implements PropertyDescriptor {
-    Request_Url("0", "Request_Url"),
-    Request_Header("1", "Request_Header"),
+    Request_Url("0", "Query Params"),
+    Request_Header("1", "Header"),
     ;
 
     private final String value;
