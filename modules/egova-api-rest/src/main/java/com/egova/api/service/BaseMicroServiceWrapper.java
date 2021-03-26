@@ -1,7 +1,7 @@
 package com.egova.api.service;
 
-import com.egova.entity.Category;
-import com.egova.facade.CategoryFacade;
+import com.egova.api.entity.Category;
+import com.egova.api.facade.ApiCategoryFacade;
 import com.egova.json.utils.JsonUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BaseMicroServiceWrapper {
 
-    private final CategoryFacade categoryFacade;
+    private final ApiCategoryFacade categoryFacade;
 
-    public List<Category> getCategoryTreeById(String id,List<String> idList) {
+    public List<Category> getCategoryTreeById(String id, List<String> idList) {
         List<Category> tree = categoryFacade.getTreeById(id);
         if (CollectionUtils.isEmpty(tree)) {
             return Collections.emptyList();
@@ -31,8 +31,8 @@ public class BaseMicroServiceWrapper {
         return tree;
     }
 
-    public List<Category> getCategoryTreeByType(String type,List<String> idList) {
-        List<Category> tree = categoryFacade.getTreeByType(type);
+    public List<Category> getCategoryTreeByTypeAndProjectId(String type,String projectId,List<String> idList) {
+        List<Category> tree = categoryFacade.getTreeByTypeAndProject(type,projectId);
         if (CollectionUtils.isEmpty(tree)) {
             return Collections.emptyList();
         }

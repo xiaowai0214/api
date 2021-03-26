@@ -1,9 +1,9 @@
 package com.egova.api.facade;
 
+import com.egova.api.entity.Category;
+import com.egova.api.entity.Info;
 import com.egova.api.model.ApiInfoModel;
 import com.egova.cloud.FeignClient;
-import com.egova.api.entity.Info;
-import com.egova.entity.Category;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

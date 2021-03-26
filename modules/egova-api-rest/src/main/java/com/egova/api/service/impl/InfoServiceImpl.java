@@ -11,7 +11,6 @@ import com.egova.api.service.InfoService;
 import com.egova.api.util.JsonPathUtils;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
-import com.egova.entity.Category;
 import com.egova.exception.ExceptionUtils;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
@@ -103,7 +102,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         List<String> ids = Lists.newArrayList();
         List<Category> tree = Optional.ofNullable(StringUtils.isBlank(categoryId) ? null : categoryId)
                 .map(g -> baseMicroServiceWrapper.getCategoryTreeById(g, ids))
-                .orElse(baseMicroServiceWrapper.getCategoryTreeByType(CATEGORY_TYPE, ids));
+                .orElse(baseMicroServiceWrapper.getCategoryTreeByTypeAndProjectId(CATEGORY_TYPE,projectId, ids));
 
 
         Map<String, List<Info>> group = infoRepository
