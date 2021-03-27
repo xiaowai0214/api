@@ -386,5 +386,21 @@ public class JsonPathTest {
         return spiltPaths(path,list);
     }
 
+    @Test
+    public void replaceUrl(){
+        String url  = "/unity/api/run/{apiId}/web";
+        Map<String,Object> pathParamMap =new HashMap<>();
+        pathParamMap.put("apiId", "123");
+        pathParamMap.put("projectId", "001");
+        String finalUrl = url;
+        if (!CollectionUtils.isEmpty(pathParamMap)){
+            for (Map.Entry<String, Object> entry : pathParamMap.entrySet()) {
+                finalUrl = finalUrl.replaceAll("\\{" +  entry.getKey() +  "\\}", entry.getValue() == null  ? "" : entry.getValue().toString());
+            }
+        }
+        System.out.println(finalUrl);
+    }
 
-}
+
+
+    }

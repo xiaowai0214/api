@@ -60,6 +60,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         Map<String, String> requestHeaderMap = new HashMap<>();
         Map<String, Object> queryParamMap = new HashMap<>();
         Map<String, Object> formParamMap = new HashMap<>();
+        Map<String, Object> pathParamMap = new HashMap<>();
 
 //        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
         Info apiInfo = model.getInfo();
@@ -96,6 +97,14 @@ public class ApiRunServiceImpl implements ApiRunService {
                     });
         }
 
+        // path param
+        if (!CollectionUtils.isEmpty(model.getPathParams())) {
+            model.getPathParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.Path)
+                    .forEach(requestParam -> {
+                        pathParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
+                    });
+        }
+
         if (!CollectionUtils.isEmpty(model.getFormParams())) {
             model.getFormParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.FormData)
                     .forEach(requestParam -> {
@@ -107,22 +116,22 @@ public class ApiRunServiceImpl implements ApiRunService {
         HttpRequestBase remoteRequest = null;
         switch (apiInfo.getMethod()) {
             case POST:
-                HttpPost httpPost = new HttpPost(markGetUrl(apiInfo.getUrl(), queryParamMap));
+                HttpPost httpPost = new HttpPost(markGetUrl(apiInfo.getUrl(), queryParamMap,pathParamMap));
                 wrapBodyParams(httpPost, apiInfo.getRequestBodyType(), formParamMap, model.getJson());
                 remoteRequest = httpPost;
                 break;
 
             case GET:
-                remoteRequest = new HttpGet(markGetUrl(apiInfo.getUrl(), queryParamMap));
+                remoteRequest = new HttpGet(markGetUrl(apiInfo.getUrl(), queryParamMap,pathParamMap));
                 break;
 
             case PUT:
-                HttpPut httpPut = new HttpPut(markGetUrl(apiInfo.getUrl(), queryParamMap));
+                HttpPut httpPut = new HttpPut(markGetUrl(apiInfo.getUrl(), queryParamMap,pathParamMap));
                 wrapBodyParams(httpPut, apiInfo.getRequestBodyType(), formParamMap, model.getJson());
                 remoteRequest = httpPut;
                 break;
             case DELETE:
-                remoteRequest = new HttpDelete(markGetUrl(apiInfo.getUrl(), queryParamMap));
+                remoteRequest = new HttpDelete(markGetUrl(apiInfo.getUrl(), queryParamMap,pathParamMap));
                 break;
 
         }
@@ -193,8 +202,14 @@ public class ApiRunServiceImpl implements ApiRunService {
         return null;
     }
 
-    private String markGetUrl(String url, Map<String, Object> queryParamMap) {
+    private String markGetUrl(String url, Map<String, Object> queryParamMap, Map<String, Object> pathParamMap) {
         String finalUrl = url;
+        if (!CollectionUtils.isEmpty(pathParamMap)){
+            for (Map.Entry<String, Object> entry : pathParamMap.entrySet()) {
+                finalUrl = finalUrl.replaceAll("\\{" +  entry.getKey() +  "\\}", entry.getValue() == null  ? "" : entry.getValue().toString());
+            }
+        }
+
         if (queryParamMap != null && queryParamMap.size() > 0) {
             finalUrl = url + "?";
             for (Map.Entry<String, Object> entry : queryParamMap.entrySet()) {
@@ -341,6 +356,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         }
 
         apiResult.setContent(responseContent);
+        apiResult.setOriginalContent(responseContent);
     }
 
     public String convert(String responseContent, String apiId) {

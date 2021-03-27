@@ -25,6 +25,12 @@ public class ApiInfoModel {
      */
     private List<RequestParam> queryParams;
 
+
+    /*
+     * path参数
+     */
+    private List<RequestParam> pathParams;
+
     private List<RequestHeader> requestHeaders;
 
     /*

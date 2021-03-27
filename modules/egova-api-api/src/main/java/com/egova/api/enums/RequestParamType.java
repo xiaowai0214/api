@@ -13,6 +13,7 @@ public enum RequestParamType implements PropertyDescriptor {
     QueryString("0", "QueryString"),
     FormData("1", "FormData"),
     Json("2", "Json"),
+    Path("3", "Path"),
     ;
 
     private final String value;

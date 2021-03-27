@@ -178,6 +178,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         Optional.ofNullable(requestParams).ifPresent(params -> {
             apiInfoModel.setQueryParams(params.stream().filter(p-> p.getType() == RequestParamType.QueryString).collect(Collectors.toList()));
             apiInfoModel.setFormParams(params.stream().filter(p-> p.getType() == RequestParamType.FormData).collect(Collectors.toList()));
+            apiInfoModel.setPathParams(params.stream().filter(p-> p.getType() == RequestParamType.Path).collect(Collectors.toList()));
         });
         Optional.ofNullable(eventScripts).ifPresent(scripts -> {
             apiInfoModel.setPreScripts(scripts.stream().filter(p-> p.getEventType() == EventType.Previous).collect(Collectors.toList()));
@@ -277,6 +278,7 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                 .toClause()
         );
         Info info = apiInfoModel.getInfo();
+        savePathParams(apiInfoModel);
         switch (info.getMethod()) {
             case GET:
             case DELETE:
@@ -292,6 +294,20 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                     saveJsonParams(apiInfoModel);
                 }
                 break;
+        }
+    }
+
+    private void savePathParams(ApiInfoModel apiInfoModel) {
+        List<RequestParam> pathParams = apiInfoModel.getPathParams()
+                .stream().filter(requestParam -> requestParam.getType() == RequestParamType.Path)
+                .collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(pathParams)) {
+            pathParams
+                    .forEach(p -> {
+                        p.setApiId(apiInfoModel.getInfo().getId());
+                        p.setId(UUID.randomUUID().toString());
+                    });
+            requestParamRepository.insertList(pathParams);
         }
     }
 
