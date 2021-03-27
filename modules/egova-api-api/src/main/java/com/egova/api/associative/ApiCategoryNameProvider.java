@@ -1,7 +1,7 @@
 package com.egova.api.associative;
 
+import com.egova.api.entity.codes.CategoryIntro;
 import com.egova.associative.AssociativeProvider;
-import com.egova.entity.codes.CategoryIntro;
 import org.springframework.stereotype.Component;
 
 /**
