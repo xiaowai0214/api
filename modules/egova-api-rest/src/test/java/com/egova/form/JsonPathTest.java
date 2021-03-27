@@ -1,8 +1,12 @@
 package com.egova.form;
 
 import com.alibaba.fastjson.JSONObject;
+import com.egova.api.entity.RequestParam;
+import com.egova.api.enums.DataType;
 import com.egova.api.util.JsonPathUtils;
 import com.egova.json.utils.JsonUtils;
+import com.flagwind.commons.Monment;
+import net.minidev.json.JSONArray;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
@@ -282,81 +286,89 @@ public class JsonPathTest {
 
         Map<String,Object> map2 = new HashMap<>();
         String path = "{\n" +
-                "    \"hasError\":false,\n" +
-                "    \"result\":[\n" +
-                "        {\n" +
-                "            \"id\":\"036865e1-0213-4aa5-8d3b-f05822d1ab22\",\n" +
-                "            \"name\":\"问题上报\",\n" +
-                "            \"pageId\":null,\n" +
-                "            \"parentId\":null,\n" +
-                "            \"type\":\"Category\",\n" +
-                "            \"creator\":\"admin\",\n" +
-                "            \"createTime\":\"2021-03-02 15:55:47\",\n" +
-                "            \"modifier\":null,\n" +
-                "            \"modifyTime\":null,\n" +
-                "            \"sort\":null,\n" +
-                "            \"published\":false,\n" +
-                "            \"icon\":\"14\",\n" +
-                "            \"color\":\"#7964C5,#B7A4F7\",\n" +
-                "            \"sceneId\":null,\n" +
-                "            \"qrCode\":null,\n" +
-                "            \"headPicture\":null,\n" +
-                "            \"thumbnail\":null,\n" +
-                "            \"hidden\":false,\n" +
-                "            \"favorite\":[\n" +
-                "\n" +
-                "            ],\n" +
-                "            \"collected\":false,\n" +
-                "            \"count\":0,\n" +
-                "            \"_type\":{\n" +
-                "                \"name\":\"Category\",\n" +
-                "                \"text\":\"目录\",\n" +
-                "                \"value\":\"0\"\n" +
-                "            }\n" +
-                "        },\n" +
-                "        {\n" +
-                "            \"id\":\"0a02b42c-978a-408f-a0b4-9146d1ebd999\",\n" +
-                "            \"name\":\"调查问卷\",\n" +
-                "            \"pageId\":null,\n" +
-                "            \"parentId\":null,\n" +
-                "            \"type\":\"Category\",\n" +
-                "            \"creator\":\"admin\",\n" +
-                "            \"createTime\":\"2021-03-02 15:55:33\",\n" +
-                "            \"modifier\":null,\n" +
-                "            \"modifyTime\":null,\n" +
-                "            \"sort\":null,\n" +
-                "            \"published\":false,\n" +
-                "            \"icon\":\"15\",\n" +
-                "            \"color\":\"#40AB5B,#72DD8D\",\n" +
-                "            \"sceneId\":null,\n" +
-                "            \"qrCode\":null,\n" +
-                "            \"headPicture\":null,\n" +
-                "            \"thumbnail\":null,\n" +
-                "            \"hidden\":false,\n" +
-                "            \"favorite\":[\n" +
-                "\n" +
-                "            ],\n" +
-                "            \"collected\":false,\n" +
-                "            \"count\":0,\n" +
-                "            \"_type\":{\n" +
-                "                \"name\":\"Category\",\n" +
-                "                \"text\":\"目录\",\n" +
-                "                \"value\":\"0\"\n" +
-                "            }\n" +
-                "        }\n" +
-                "    ]\n" +
+                "  \"condition\":{\n" +
+                "      \n" +
+                "  },\n" +
+                "  \"paging\":{\n" +
+                "      \"pageIndex\":1,\n" +
+                "      \"pageSize\":3\n" +
+                "  }\n" +
                 "}";
         List<String> list = JsonPathUtils.getListJsonPathByJsonString(path);
+
+        List<RequestParam> requestParams = new ArrayList<>();
 
 
         Map<String,Object> map = new HashMap<>();
         list.forEach(s->{
-//            System.out.println(s);
-//            System.out.println(JsonPathUtils.readjson(path,s));
-            map.put(s,JsonPathUtils.readjson(path,s));
+            RequestParam requestParam = new RequestParam();
+            Object value = JsonPathUtils.readjson(path, s);
+
+            String valueContent= "";
+            DataType valueType = DataType.String;
+
+            if (value instanceof Integer) {
+                valueContent = value.toString();
+                valueType = DataType.Integer;
+            } else if (value instanceof String) {
+                valueContent = value.toString();
+            } else if (value instanceof Boolean) {
+                valueContent = value.toString();
+                valueType = DataType.Boolean;
+            } else if (value instanceof net.minidev.json.JSONArray) {
+                net.minidev.json.JSONArray  arr = (net.minidev.json.JSONArray) value;
+                valueContent = arr.toJSONString();
+                valueType = DataType.Array;
+            } else if (value instanceof LinkedHashMap) {
+                valueContent = JsonUtils.serialize(value);
+                valueType = DataType.Map;
+            } else if (value instanceof Float) {
+                value.toString();
+            } else {
+                value.toString();
+            }
+            requestParam.setName(s);
+            requestParam.setValueContent(valueContent);
+            requestParam.setValueType(valueType);
+            requestParams.add(requestParam);
+            requestParam.setValueType(valueType);
+            map.put(s,value);
         });
         String json = JsonPathUtils.warpJson(map);
         System.out.println(json);
+
+        requestParams.forEach(requestParam -> {
+            Object original = getOriginal(requestParam.getValueContent(), requestParam.getValueType());
+            map2.put(requestParam.getName(),original);
+        });
+        String json2 = JsonPathUtils.warpJson(map2);
+        System.out.println(json2);
+
+    }
+
+    private Object getOriginal(String value,DataType dataType) {
+        Object valueContent = value;
+        switch (dataType){
+            case Integer:
+                valueContent = Integer.valueOf(value);
+                break;
+            case Long:
+                valueContent = Long.valueOf(value);
+                break;
+            case Float:
+                valueContent = Float.valueOf(value);
+                break;
+            case Timestamp:
+                valueContent = new Monment(value,"yyyy-MM-dd HH:mm:ss");
+                break;
+            case Array:
+                valueContent = JsonUtils.deserialize(value, JSONArray.class);
+                break;
+            case Map:
+                valueContent = JsonUtils.deserialize(value, Map.class);
+                break;
+        }
+        return valueContent;
     }
 
 

@@ -12,16 +12,19 @@ import com.egova.api.util.JsonPathUtils;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
 import com.egova.exception.ExceptionUtils;
+import com.egova.json.utils.JsonUtils;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import com.egova.persistent.ClauseBuilder;
 import com.egova.security.UserContext;
+import com.flagwind.commons.Monment;
 import com.flagwind.commons.StringUtils;
 import com.flagwind.persistent.model.SingleClause;
 import com.flagwind.persistent.model.Sorting;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONArray;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -191,12 +194,38 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                     .stream()
                     .filter(p -> p.getType() == RequestParamType.Json)
                     .forEach(requestParam -> {
-                        map.put(requestParam.getName(), requestParam.getValueContent());
+                        map.put(requestParam.getName(), getOriginal(requestParam.getValueContent(),requestParam.getValueType()));
                     });
             json = JsonPathUtils.warpJson(map);
             apiInfoModel.setJson(json);
         }
         return apiInfoModel;
+    }
+
+
+    private Object getOriginal(String value,DataType dataType) {
+        Object valueContent = value;
+        switch (dataType){
+            case Integer:
+                valueContent = Integer.valueOf(value);
+                break;
+            case Long:
+                valueContent = Long.valueOf(value);
+                break;
+            case Float:
+                valueContent = Float.valueOf(value);
+                break;
+            case Timestamp:
+                valueContent = new Monment(value,"yyyy-MM-dd HH:mm:ss");
+                break;
+            case Array:
+                valueContent = JsonUtils.deserialize(value, JSONArray.class);
+                break;
+            case Map:
+                valueContent = JsonUtils.deserialize(value, Map.class);
+                break;
+        }
+        return valueContent;
     }
 
     private void saveAuthentication(ApiInfoModel apiInfoModel) {
@@ -305,8 +334,33 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
                 requestParam.setApiId(apiInfoModel.getInfo().getId());
                 requestParam.setName(path);
                 requestParam.setText(path);
-                Object readjson = JsonPathUtils.readjson(json, path);
-                requestParam.setValueContent(null == readjson ? null : readjson.toString());
+                Object value = JsonPathUtils.readjson(json, path);
+                String valueContent= "";
+                DataType valueType = DataType.String;
+
+                if (value instanceof Integer) {
+                    valueContent = value.toString();
+                    valueType = DataType.Integer;
+                } else if (value instanceof String) {
+                    valueContent = value.toString();
+                } else if (value instanceof Boolean) {
+                    valueContent = value.toString();
+                    valueType = DataType.Boolean;
+                } else if (value instanceof net.minidev.json.JSONArray) {
+                    net.minidev.json.JSONArray  arr = (net.minidev.json.JSONArray) value;
+                        valueContent = arr.toJSONString();
+                        valueType = DataType.Array;
+                } else if (value instanceof LinkedHashMap) {
+                    valueContent = JsonUtils.serialize(value);
+                    valueType = DataType.Map;
+                } else if (value instanceof Float) {
+                     value.toString();
+                } else {
+                     value.toString();
+                }
+
+                requestParam.setValueContent(valueContent);
+                requestParam.setValueType(valueType);
                 jsonParams.add(requestParam);
             });
             requestParamRepository.insertList(jsonParams);
