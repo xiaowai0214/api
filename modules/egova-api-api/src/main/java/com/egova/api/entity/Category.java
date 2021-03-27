@@ -23,7 +23,7 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 public class Category extends BaseEntity implements Comparable<Category> {
 
-    public static final String NAME = "base:category";
+    public static final String NAME = "api:category";
 
     @Display("主键")
     @Id
