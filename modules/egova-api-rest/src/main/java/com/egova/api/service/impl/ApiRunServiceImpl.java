@@ -16,7 +16,6 @@ import com.egova.api.model.ApiInfoModel;
 import com.egova.api.model.ApiResult;
 import com.egova.api.service.ApiRunService;
 import com.egova.api.util.JsonPathUtils;
-import com.egova.exception.ExceptionUtils;
 import com.egova.lang.ExtrasHashMap;
 import com.flagwind.application.Application;
 import com.flagwind.commons.Monment;
@@ -62,7 +61,8 @@ public class ApiRunServiceImpl implements ApiRunService {
         Map<String, Object> queryParamMap = new HashMap<>();
         Map<String, Object> formParamMap = new HashMap<>();
 
-        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
+//        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
+        Info apiInfo = model.getInfo();
         Authentication authentication = Optional.ofNullable(authenticationRepository.single("projectId", apiInfo.getProjectId())).orElse(null);
         if (!(authentication == null || StringUtils.isBlank(authentication.getContent()))){
             List<AuthenticationSupplier> authenticationSuppliers = Application.resolveAll(AuthenticationSupplier.class);

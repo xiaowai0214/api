@@ -52,4 +52,8 @@ public class RequestHeader extends BaseEntity {
     @Column(name = "scope")
     private RequestScope scope;
 
+    @Display("是否禁用")
+    @Column(name = "disabled")
+    private boolean disabled;
+
 }
