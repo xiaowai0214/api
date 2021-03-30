@@ -16,6 +16,7 @@ import com.egova.api.model.ApiInfoModel;
 import com.egova.api.model.ApiResult;
 import com.egova.api.service.ApiRunService;
 import com.egova.api.util.JsonPathUtils;
+import com.egova.json.utils.JsonUtils;
 import com.egova.lang.ExtrasHashMap;
 import com.flagwind.application.Application;
 import com.flagwind.commons.Monment;
@@ -155,6 +156,17 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (CollectionUtils.isEmpty(apiInfoModel.getFormParams())){
             requestParams.addAll(apiInfoModel.getFormParams());
         }
+        if (StringUtils.isNotBlank(apiInfoModel.getJson())){
+            Map map = JsonUtils.deserialize(apiInfoModel.getJson(), Map.class);
+            map.forEach((k,v)->{
+                if (requestMap.containsKey(k)){
+                    v = requestMap.get(k);
+                    map.put(k,v);
+                }
+            });
+            apiInfoModel.setJson(JsonUtils.serialize(map));
+        }
+
         requestParams.forEach(requestParam -> {
             if (requestMap.containsKey(requestParam.getName())){
                 requestParam.setValueContent(requestMap.get(requestParam.getName()).toString());
@@ -217,7 +229,7 @@ public class ApiRunServiceImpl implements ApiRunService {
             }
             finalUrl = finalUrl.substring(0, finalUrl.length() - 1);    // 后缀处理，去除 ？ 或 & 符号
         }
-        return finalUrl;
+        return ParamConverter.convert(finalUrl);
     }
 
     private void wrapBodyParams(HttpEntityEnclosingRequestBase httpEntity, RequestBodyType requestBodyType, Map<String, Object> formParamMap, String json) {
