@@ -95,9 +95,24 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     @Override
     public int deleteById(String id) {
         Info entity = infoRepository.getById(id);
-        super.deleteById(id);
+        infoRepository.deleteById(id);
+        requestHeaderRepository.delete(SingleClause.equal("belongId",id));
+        requestParamRepository.delete(SingleClause.equal("apiId",id));
+        eventScriptRepository.delete(SingleClause.equal("apiId",id));
+        convertConfigRepository.delete(SingleClause.equal("apiId",id));
+        fieldMappingRepository.delete(SingleClause.equal("apiId",id));
+        clearInfoCache();
         trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Delete));
         return 1;
+    }
+
+    private void clearInfoCache() {
+        infoRepository.clearCache();
+        requestHeaderRepository.clearCache();
+        requestParamRepository.clearCache();
+        eventScriptRepository.clearCache();
+        convertConfigRepository.clearCache();
+        fieldMappingRepository.clearCache();
     }
 
     @Override

@@ -3,8 +3,13 @@ package com.egova.api.service.impl;
 import com.egova.api.cache.ApiCategoryCache;
 import com.egova.api.condition.AdjustSortCondition;
 import com.egova.api.condition.CategoryCondition;
-import com.egova.api.domain.CategoryRepository;
+import com.egova.api.domain.*;
 import com.egova.api.entity.Category;
+import com.egova.api.entity.Info;
+import com.egova.api.entity.Trends;
+import com.egova.api.enums.OperateType;
+import com.egova.api.enums.TrendsType;
+import com.egova.api.facade.TrendsFacade;
 import com.egova.api.service.CategoryService;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
@@ -39,6 +44,13 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
 
 
     private final CategoryRepository repository;
+    private final InfoRepository infoRepository;
+    private final EventScriptRepository eventScriptRepository;
+    private final RequestHeaderRepository requestHeaderRepository;
+    private final RequestParamRepository requestParamRepository;
+    private final FieldMappingRepository fieldMappingRepository;
+    private final ConvertConfigRepository convertConfigRepository;
+    private final TrendsFacade trendsFacade;
 
     private final SequenceGenerator sequenceGenerator;
     protected Cache<String, List<Category>> cache = CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(5)).build();
@@ -74,16 +86,42 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
 
     @Override
     public int deleteById(String id) {
+        Category category = Optional.ofNullable(repository.getById(id)).orElseThrow(()-> ExceptionUtils.api("该目录不存在"));
+        trendsFacade.insert(new Trends(category.getProjectId(), category.getId(), "", "", TrendsType.APi_Category, OperateType.Delete));
         return this.deleteByIds(id);
     }
 
+    @Transactional
     @Override
     public int deleteByIds(String... ids) {
         List<String> treeIds = new ArrayList<>();
         for (String id : ids) {
             getTreeIdById(id, treeIds);
         }
-        return super.deleteByIds(treeIds);
+        List<Info> infos = infoRepository.query(SingleClause.in("categoryId", treeIds.stream().toArray(String[]::new)));
+        repository.deleteByIds(treeIds.stream().toArray(String[]::new));
+        if (CollectionUtils.isEmpty(infos)){
+            return 1;
+        }
+        String[] apiIds = infos.stream().map(Info::getId).toArray(String[]::new);
+        infoRepository.deleteByIds(apiIds);
+        requestHeaderRepository.delete(SingleClause.in("belongId",apiIds));
+        requestParamRepository.delete(SingleClause.in("apiId",apiIds));
+        eventScriptRepository.delete(SingleClause.in("apiId",apiIds));
+        convertConfigRepository.delete(SingleClause.in("apiId",apiIds));
+        fieldMappingRepository.delete(SingleClause.in("apiId",apiIds));
+        clearCategoryCache();
+        return 1;
+    }
+
+    public void clearCategoryCache() {
+        cache.invalidateAll();
+        infoRepository.clearCache();
+        requestHeaderRepository.clearCache();
+        requestParamRepository.clearCache();
+        eventScriptRepository.clearCache();
+        convertConfigRepository.clearCache();
+        fieldMappingRepository.clearCache();
     }
 
     @Override
@@ -130,6 +168,7 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
         } else {
             entity.setSort(0);
         }
+        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getId(), "", "", TrendsType.APi_Category, OperateType.Insert));
         return super.insert(entity);
     }
 
@@ -161,6 +200,7 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
     @Override
     public void update(Category entity) {
         this.check(entity);
+        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getId(), "", "", TrendsType.APi_Category, OperateType.Update));
         super.update(entity);
     }
 

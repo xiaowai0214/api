@@ -75,17 +75,17 @@ public class Info extends BaseEntity {
     @Column(name = "remark")
     private String remark;
 
-    @Display("前置脚本")
-    @Column(name = "previousScript")
-    private String previousScript;
-
-    @Display("后置脚本")
-    @Column(name = "postScript")
-    private String postScript;
-
-    @Display("认证")
-    @Column(name = "authenticationId")
-    private String authenticationId;
+//    @Display("前置脚本")
+//    @Column(name = "previousScript")
+//    private String previousScript;
+//
+//    @Display("后置脚本")
+//    @Column(name = "postScript")
+//    private String postScript;
+//
+//    @Display("认证")
+//    @Column(name = "authenticationId")
+//    private String authenticationId;
 
 //    @Transient
 //    private String json;

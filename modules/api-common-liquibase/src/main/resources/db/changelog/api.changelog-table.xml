@@ -1,0 +1,223 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+
+    <changeSet id="20210330-1" author="huangkang" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_authentication" />
+            </not>
+        </preConditions>
+        <createTable remarks="api授权" tableName="api_authentication">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="projectId" remarks="项目id" type="VARCHAR(100)"/>
+            <column name="type" remarks="认证方式，【api Key】【Base Auth】【OAuth2.0】" type="VARCHAR(11)"/>
+            <column name="content" remarks="参数内容" type="text"/>
+            <column name="location" remarks="存放位置，【Header】【queryString】" type="VARCHAR(20)"/>
+            <column name="locationKey" remarks="存放token的key" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-2" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_category" />
+            </not>
+        </preConditions>
+        <createTable remarks="api通用分组" tableName="api_category">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" remarks="api名称" type="VARCHAR(100)"/>
+            <column name="projectId" remarks="项目id" type="VARCHAR(50)"/>
+            <column name="parentId" remarks="父级id" type="VARCHAR(50)"/>
+            <column name="sort" remarks="排序" type="int(11)"/>
+            <column name="type" remarks="分类类型" type="VARCHAR(50)"/>
+            <column name="disabled" remarks="是否禁用" type="tinyint(1)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-3" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_convert_config" />
+            </not>
+        </preConditions>
+        <createTable remarks="api转换配置" tableName="api_convert_config">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="apiId" remarks="apiId" type="VARCHAR(50)"/>
+            <column name="convertRoot" remarks="转换根节点" type="VARCHAR(50)"/>
+            <column name="successCodePath" remarks="接口成功调用状态吗路径" type="VARCHAR(255)"/>
+            <column name="successCode" remarks="接口调用成功标识" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-4" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_environment_param" />
+            </not>
+        </preConditions>
+        <createTable remarks="api环境变量" tableName="api_environment_param">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" remarks="名称" type="VARCHAR(50)"/>
+            <column name="value" remarks="值" type="VARCHAR(255)"/>
+            <column name="remark" remarks="描述" type="VARCHAR(255)"/>
+            <column name="projectId" remarks="项目id" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-5" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_event_script" />
+            </not>
+        </preConditions>
+        <createTable remarks="api脚本配置" tableName="api_event_script">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="projectId" remarks="项目id" type="VARCHAR(50)"/>
+            <column name="apiId" remarks="apiId" type="VARCHAR(50)"/>
+            <column name="eventType" remarks="事件类型[0:前置事件,1:后置事件]" type="int(50)"/>
+            <column name="type" remarks="脚本类型0:groovy,1:formula]" type="VARCHAR(50)"/>
+            <column name="content" remarks="参数内容" type="text"/>
+            <column name="sort" remarks="排序" type="int(11)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-6" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_field_mapping" />
+            </not>
+        </preConditions>
+        <createTable remarks="api字段映射" tableName="api_field_mapping">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="apiId" remarks="apiId" type="VARCHAR(50)"/>
+            <column name="originalParamPath" remarks="原始的参数路径" type="VARCHAR(255)"/>
+            <column name="paramPath" remarks="参数路径" type="VARCHAR(255)"/>
+            <column name="name" remarks="新参数名称" type="VARCHAR(100)"/>
+            <column name="valueContent" remarks="参数值" type="longtext"/>
+            <column name="valueType" remarks="值类型" type="VARCHAR(20)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-7" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_info" />
+            </not>
+        </preConditions>
+        <createTable remarks="api" tableName="api_info">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" remarks="名称" type="VARCHAR(50)"/>
+            <column name="projectId" remarks="api项目id" type="VARCHAR(50)"/>
+            <column name="categoryId" remarks="api分组id" type="VARCHAR(50)"/>
+            <column name="method" remarks="请求方式" type="VARCHAR(10)"/>
+            <column name="url" remarks="请求路径" type="VARCHAR(255)"/>
+            <column name="status" remarks="状态" type="VARCHAR(11)"/>
+            <column name="requestBodyType" remarks="body参数类型【multipart/form-data 】【json】【】。。。" type="VARCHAR(11)"/>
+            <column name="documentId" remarks="文档id" type="VARCHAR(50)"/>
+            <column name="creator" remarks="创建人" type="VARCHAR(50)"/>
+            <column name="createTime" remarks="创建时间" type="datetime"/>
+            <column name="remark" remarks="备注" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-8" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_project" />
+            </not>
+        </preConditions>
+        <createTable remarks="api" tableName="api_project">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" remarks="名称" type="VARCHAR(50)"/>
+            <column name="description" remarks="描述" type="VARCHAR(255)"/>
+            <column name="sort" remarks="排序" type="int(11)"/>
+            <column name="creator" remarks="创建人" type="VARCHAR(50)"/>
+            <column name="createTime" remarks="创建时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="20210330-9" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_request_header" />
+            </not>
+        </preConditions>
+        <createTable remarks="api" tableName="api_request_header">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" remarks="名称" type="VARCHAR(50)"/>
+            <column name="value" remarks="值" type="VARCHAR(50)"/>
+            <column name="text" remarks="说明" type="VARCHAR(255)"/>
+            <column name="required" remarks="必填" type="tinyint(1)"/>
+            <column name="belongId" remarks="【apiId】【projectId】" type="varchar(50)"/>
+            <column name="scope" remarks="范围【全局 global, 适用于定义全局环境的头信息】，【单个api】" type="varchar(11)"/>
+            <column name="disabled" remarks="是否禁用" type="tinyint(1)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210330-10" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_request_param" />
+            </not>
+        </preConditions>
+        <createTable remarks="api" tableName="api_request_param">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" remarks="名称" type="VARCHAR(50)"/>
+            <column name="text" remarks="说明" type="VARCHAR(255)"/>
+            <column name="example" remarks="参考值" type="VARCHAR(50)"/>
+            <column name="apiId" remarks="apiId" type="VARCHAR(50)"/>
+            <column name="type" remarks="参数类型【QueryString】【FormData】【Json】" type="VARCHAR(11)"/>
+            <column name="valueType" remarks="值类型" type="VARCHAR(11)"/>
+            <column name="valueContent" remarks="值内容" type="VARCHAR(255)"/>
+            <column name="disabled" remarks="是否禁用" type="tinyint(1)"/>
+        </createTable>
+    </changeSet>
+
+
+    <changeSet id="20210330-11" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="api_trends" />
+            </not>
+        </preConditions>
+        <createTable remarks="api" tableName="api_trends">
+            <column name="id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="projectId" remarks="项目id" type="VARCHAR(50)"/>
+            <column name="categoryId" remarks="api分组" type="VARCHAR(50)"/>
+            <column name="apiId" remarks="apiId" type="VARCHAR(50)"/>
+            <column name="apiName" remarks="api名称" type="VARCHAR(255)"/>
+            <column name="creator" remarks="创建人" type="VARCHAR(50)"/>
+            <column name="createTime" remarks="创建时间" type="datetime"/>
+            <column name="type" remarks="类型 【项目，api分组，api】" type="VARCHAR(11)"/>
+            <column name="operateType" remarks="操作类型【新增，更新，删除】" type="VARCHAR(11)"/>
+        </createTable>
+    </changeSet>
+
+
+</databaseChangeLog>
