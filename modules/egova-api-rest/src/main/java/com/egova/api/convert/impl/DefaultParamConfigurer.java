@@ -5,6 +5,7 @@ import com.egova.data.designer.QueryContext;
 import com.flagwind.commons.Monment;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
 /*
@@ -16,7 +17,9 @@ public class DefaultParamConfigurer implements ParamConfigurer {
 
     @Override
     public void configure(Map<String, Object> map, QueryContext context) {
-        context.putAll(map);
+        if (!CollectionUtils.isEmpty(map)){
+            context.putAll(map);
+        }
         //例如 替换username
         context.put("username", "admin");
         context.put("now", new Monment().toString("yyyy-MM-dd HH:mm:ss"));
