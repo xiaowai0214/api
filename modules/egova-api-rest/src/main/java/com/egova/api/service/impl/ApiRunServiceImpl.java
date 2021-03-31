@@ -66,7 +66,7 @@ public class ApiRunServiceImpl implements ApiRunService {
 //        Info apiInfo = Optional.ofNullable(infoFacade.seekById(apiId)).orElseThrow(() -> ExceptionUtils.api("api不存在"));
         Info apiInfo = model.getInfo();
         Authentication authentication = Optional.ofNullable(authenticationRepository.single("projectId", apiInfo.getProjectId())).orElse(null);
-        if (!(authentication == null || StringUtils.isBlank(authentication.getContent()))){
+        if (!(authentication == null || StringUtils.isBlank(authentication.getContent())  || CollectionUtils.isEmpty((Map) JsonUtils.deserialize(authentication.getContent(),Map.class))) ){
             List<AuthenticationSupplier> authenticationSuppliers = Application.resolveAll(AuthenticationSupplier.class);
             for (AuthenticationSupplier authenticationSupplier : authenticationSuppliers) {
                 if (authenticationSupplier.match(authentication.getType())){
