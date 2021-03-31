@@ -184,12 +184,14 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
                     .filter(e -> StringUtils.equals(e.getName(), entity.getName()))
                     .filter(e -> StringUtils.equals(e.getType(), entity.getType()))
                     .filter(e -> !StringUtils.equals(e.getId(), entity.getId()))
+                    .filter(e-> StringUtils.equals(e.getProjectId(),entity.getProjectId()))
                     .collect(Collectors.toList());
         } else {
             list = list.stream()
                     .filter(e -> StringUtils.equals(e.getParentId(), entity.getParentId()))
                     .filter(e -> StringUtils.equals(e.getName(), entity.getName()))
                     .filter(e -> !StringUtils.equals(e.getId(), entity.getId()))
+                    .filter(e-> StringUtils.equals(e.getProjectId(),entity.getProjectId()))
                     .collect(Collectors.toList());
         }
         if (!CollectionUtils.isEmpty(list)) {
