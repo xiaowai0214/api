@@ -1,5 +1,6 @@
 package com.egova.api.util;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
 import com.egova.json.utils.JsonUtils;
@@ -16,7 +17,17 @@ public class JsonPathUtils {
     //获取jsonPath
     public static List<String> getListJsonPathByJsonString(String json){
         JSONObject jsonObject = JSONObject.parseObject(json);
-        return getListJsonPath(jsonObject);
+        JSONObject jsonObject2 = new JSONObject();
+        jsonObject.forEach((k,v)->{
+            if (v instanceof JSONArray && ((JSONArray)v).size() > 1){
+                JSONArray jsonArray =new JSONArray();
+                jsonArray.add(((JSONArray)v).get(0));
+                jsonObject2.put(k,jsonArray);
+            }else {
+                jsonObject2.put(k,v);
+            }
+        });
+        return getListJsonPath(jsonObject2);
     }
 
     public static List<String> getListJsonPath(JSONObject jsonObject) {
