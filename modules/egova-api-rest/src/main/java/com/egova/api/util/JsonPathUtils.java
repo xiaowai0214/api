@@ -3,13 +3,16 @@ package com.egova.api.util;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPath;
+import com.egova.api.enums.DataType;
 import com.egova.json.utils.JsonUtils;
+import com.flagwind.commons.Monment;
 import com.flagwind.commons.StringUtils;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Predicate;
 import org.springframework.util.CollectionUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -103,6 +106,30 @@ public class JsonPathUtils {
             JSONPath.set(jsonObject,k,v);
         });
         return JsonUtils.serialize(jsonObject);
+    }
+
+    public static Object transform(Object input, DataType dataType){
+        if (null == input){
+            return null;
+        }
+        if (dataType == null){
+            return input;
+        }
+        switch (dataType){
+            case String:
+                return input;
+            case Long:
+                return Long.valueOf(input.toString());
+            case Float:
+                return Float.valueOf(input.toString());
+            case Boolean:
+                return Boolean.valueOf(input.toString());
+            case Integer:
+                return Integer.valueOf(input.toString());
+            case Timestamp:
+                return new Timestamp(new Monment(input.toString(), "yyyy-MM-dd HH:mm:ss").getTime());
+        }
+        return input;
     }
 
     public static String warpJson(List<String> paths , String json){

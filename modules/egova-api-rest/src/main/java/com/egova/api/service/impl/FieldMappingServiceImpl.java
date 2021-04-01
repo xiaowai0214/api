@@ -60,13 +60,34 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
         }
         paths.stream()
                 .filter(path-> StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) || path.startsWith(fieldMappingBase.getConvertRoot()))
+//                .map(path->{
+//                    String convertPath = path;
+//                    if (StringUtils.isNotBlank(fieldMappingBase.getConvertRoot()) && path.startsWith(fieldMappingBase.getConvertRoot())){
+//                        if (path.startsWith(fieldMappingBase.getConvertRoot() + "[*].")){
+//                            convertPath = "data[*]." + path.substring(fieldMappingBase.getConvertRoot().length() + 4);
+//                        }else if (path.startsWith(fieldMappingBase.getConvertRoot() + ".")){
+//                            convertPath = "data[0]." + path.substring(fieldMappingBase.getConvertRoot().length() + 1);
+//                        }
+//                    }
+//                    return convertPath;
+//                })
                 .forEach(path->{
                     FieldMapping fieldMapping = new FieldMapping();
                     fieldMapping.setOriginalParamPath(path);
                     fieldMapping.setParamPath(path);
                     Object value = JsonPathUtils.readjson(fieldMappingBase.getOriginalJson(), path);
-//                    fieldMapping.setName(StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) ? path : path.substring(fieldMappingBase.getConvertRoot().length() + 1));
-                    fieldMapping.setName(path);
+
+                    String convertPath = path;
+                    if (StringUtils.isNotBlank(fieldMappingBase.getConvertRoot()) && path.startsWith(fieldMappingBase.getConvertRoot())){
+                        if (path.startsWith(fieldMappingBase.getConvertRoot() + "[*].")){
+                            convertPath = "data[*]." + path.substring(fieldMappingBase.getConvertRoot().length() + 4);
+                        }else if (path.startsWith(fieldMappingBase.getConvertRoot() + ".")){
+                            convertPath = "data[0]." + path.substring(fieldMappingBase.getConvertRoot().length() + 1);
+                        }
+                    }
+                    fieldMapping.setName(convertPath);
+
+//                    fieldMapping.setName(path);
                     fieldMapping.setValueContent(null == value ? null : value.toString());
                     fieldMappings.add(fieldMapping);
                 });
@@ -82,9 +103,31 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
         List<FieldMapping> fieldMappings = parse(fieldMappingBase);
         model.setFieldMappings(fieldMappings);
         Map<String,Object> map = new HashMap<>();
-        fieldMappings
-                .forEach(fieldMapping -> map.put(fieldMapping.getName(),fieldMapping.getValueContent()));
+//        fieldMappings
+//                .forEach(fieldMapping -> map.put(fieldMapping.getName(),fieldMapping.getValueContent()));
+
+        fieldMappings.stream()
+                .filter(p -> !StringUtils.isEmpty(p.getName()))
+                .forEach(fieldMapping -> {
+                    Object value = JsonPathUtils.readjson(fieldMappingBase.getOriginalJson(),fieldMapping.getParamPath());
+                    if (fieldMapping.getName().contains("*") && value instanceof net.minidev.json.JSONArray){
+                        net.minidev.json.JSONArray jsonArray = (net.minidev.json.JSONArray)value;
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            String item = fieldMapping.getName().replaceAll("[*]",String.valueOf(i));
+                            value = jsonArray.get(i);
+                            Object transform = JsonPathUtils.transform(value, fieldMapping.getValueType());
+                            map.put(item,transform);
+                        }
+                    }else {
+                        Object transform = JsonPathUtils.transform(value, fieldMapping.getValueType());
+                        map.put(fieldMapping.getName(),transform);
+                    }
+
+
+                });
+
         String newJson = JsonPathUtils.warpJson(map);
+
         model.setNewJson(newJson);
         return model;
     }

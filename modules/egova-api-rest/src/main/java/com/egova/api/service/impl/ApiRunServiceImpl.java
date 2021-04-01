@@ -8,7 +8,6 @@ import com.egova.api.domain.AuthenticationRepository;
 import com.egova.api.domain.ConvertConfigRepository;
 import com.egova.api.domain.FieldMappingRepository;
 import com.egova.api.entity.*;
-import com.egova.api.enums.DataType;
 import com.egova.api.enums.RequestBodyType;
 import com.egova.api.enums.RequestParamType;
 import com.egova.api.facade.InfoFacade;
@@ -41,7 +40,6 @@ import javax.annotation.Priority;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,7 +92,7 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (!CollectionUtils.isEmpty(model.getQueryParams())) {
             model.getQueryParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.QueryString)
                     .forEach(requestParam -> {
-                        queryParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
+                        queryParamMap.put(requestParam.getName(), JsonPathUtils.transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
         }
 
@@ -102,14 +100,14 @@ public class ApiRunServiceImpl implements ApiRunService {
         if (!CollectionUtils.isEmpty(model.getPathParams())) {
             model.getPathParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.Path)
                     .forEach(requestParam -> {
-                        pathParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
+                        pathParamMap.put(requestParam.getName(), JsonPathUtils.transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
         }
 
         if (!CollectionUtils.isEmpty(model.getFormParams())) {
             model.getFormParams().stream().filter(p -> BooleanUtils.isFalse(p.isDisabled()) && p.getType() == RequestParamType.FormData)
                     .forEach(requestParam -> {
-                        formParamMap.put(requestParam.getName(), transform(requestParam.getValueContent(),requestParam.getValueType()));
+                        formParamMap.put(requestParam.getName(), JsonPathUtils.transform(requestParam.getValueContent(),requestParam.getValueType()));
                     });
         }
 
@@ -402,43 +400,41 @@ public class ApiRunServiceImpl implements ApiRunService {
                         for (int i = 0; i < jsonArray.size(); i++) {
                             String item = fieldMapping.getName().replaceAll("[*]",String.valueOf(i));
                             value = jsonArray.get(i);
-                            Object transform = transform(value, fieldMapping.getValueType());
+                            Object transform = JsonPathUtils.transform(value, fieldMapping.getValueType());
                             map.put(item,transform);
                         }
                     }else {
-                        Object transform = transform(value, fieldMapping.getValueType());
+                        Object transform = JsonPathUtils.transform(value, fieldMapping.getValueType());
                         map.put(fieldMapping.getName(),transform);
                     }
 
 
                 });
-
-
         return JsonPathUtils.warpJson(map);
 
     }
 
-    public Object transform(Object input, DataType dataType){
-        if (null == input){
-            return null;
-        }
-        if (dataType == null){
-            return input;
-        }
-        switch (dataType){
-            case String:
-                return input;
-            case Long:
-                return Long.valueOf(input.toString());
-            case Float:
-                return Float.valueOf(input.toString());
-            case Boolean:
-                return Boolean.valueOf(input.toString());
-            case Integer:
-                return Integer.valueOf(input.toString());
-            case Timestamp:
-                return new Timestamp(new Monment(input.toString(), "yyyy-MM-dd HH:mm:ss").getTime());
-        }
-        return input;
-    }
+//    public Object transform(Object input, DataType dataType){
+//        if (null == input){
+//            return null;
+//        }
+//        if (dataType == null){
+//            return input;
+//        }
+//        switch (dataType){
+//            case String:
+//                return input;
+//            case Long:
+//                return Long.valueOf(input.toString());
+//            case Float:
+//                return Float.valueOf(input.toString());
+//            case Boolean:
+//                return Boolean.valueOf(input.toString());
+//            case Integer:
+//                return Integer.valueOf(input.toString());
+//            case Timestamp:
+//                return new Timestamp(new Monment(input.toString(), "yyyy-MM-dd HH:mm:ss").getTime());
+//        }
+//        return input;
+//    }
 }

@@ -648,6 +648,7 @@ public class BootstrapTest {
         FieldMappingBase fieldMappingBase = new FieldMappingBase();
         fieldMappingBase.setOriginalJson(s);
         fieldMappingBase.setCollapse(true);
+        fieldMappingBase.setConvertRoot("result");
         fieldMappingFacade.parseModel(fieldMappingBase);
         FieldMappingModel model = fieldMappingFacade.parseModel(fieldMappingBase);
         System.out.println(model);
