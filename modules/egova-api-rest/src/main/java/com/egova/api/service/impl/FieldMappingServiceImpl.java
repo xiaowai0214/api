@@ -5,6 +5,7 @@ import com.egova.api.domain.ConvertConfigRepository;
 import com.egova.api.domain.FieldMappingRepository;
 import com.egova.api.entity.ConvertConfig;
 import com.egova.api.entity.FieldMapping;
+import com.egova.api.enums.DataType;
 import com.egova.api.model.FieldMappingBase;
 import com.egova.api.model.FieldMappingModel;
 import com.egova.api.service.FieldMappingService;
@@ -13,6 +14,7 @@ import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
+import com.egova.utils.EnumEtrasUtils;
 import com.flagwind.commons.StringUtils;
 import com.flagwind.persistent.model.SingleClause;
 import lombok.RequiredArgsConstructor;
@@ -60,17 +62,6 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
         }
         paths.stream()
                 .filter(path-> StringUtils.isEmpty(fieldMappingBase.getConvertRoot()) || path.startsWith(fieldMappingBase.getConvertRoot()))
-//                .map(path->{
-//                    String convertPath = path;
-//                    if (StringUtils.isNotBlank(fieldMappingBase.getConvertRoot()) && path.startsWith(fieldMappingBase.getConvertRoot())){
-//                        if (path.startsWith(fieldMappingBase.getConvertRoot() + "[*].")){
-//                            convertPath = "data[*]." + path.substring(fieldMappingBase.getConvertRoot().length() + 4);
-//                        }else if (path.startsWith(fieldMappingBase.getConvertRoot() + ".")){
-//                            convertPath = "data[0]." + path.substring(fieldMappingBase.getConvertRoot().length() + 1);
-//                        }
-//                    }
-//                    return convertPath;
-//                })
                 .forEach(path->{
                     FieldMapping fieldMapping = new FieldMapping();
                     fieldMapping.setOriginalParamPath(path);
@@ -87,8 +78,14 @@ public class FieldMappingServiceImpl extends TemplateService<FieldMapping, Strin
                     }
                     fieldMapping.setName(convertPath);
 
-//                    fieldMapping.setName(path);
+                    Object typeValue = JsonPathUtils.readjson(fieldMappingBase.getOriginalJson(),path.replaceAll("[*]","0"));
+                    if (typeValue != null){
+                        Class<?> aClass = typeValue.getClass();
+                        DataType dataType = EnumEtrasUtils.valueOf(DataType.class, aClass.getSimpleName());
+                        fieldMapping.setValueType(dataType);
+                    }
                     fieldMapping.setValueContent(null == value ? null : value.toString());
+
                     fieldMappings.add(fieldMapping);
                 });
         return fieldMappings;
