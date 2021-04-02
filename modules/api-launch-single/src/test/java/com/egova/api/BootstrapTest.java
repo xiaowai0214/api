@@ -22,7 +22,6 @@ public class BootstrapTest {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-
     /**
      * 单元测试
      */

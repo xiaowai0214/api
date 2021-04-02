@@ -1,10 +1,9 @@
 package com.egova.api.entity;
 
-import com.egova.api.associative.ProjectNameProvider;
 import com.egova.api.enums.OperateType;
 import com.egova.api.enums.TrendsType;
 import com.egova.associative.Associative;
-import com.egova.associative.CategoryNameProvider;
+import com.egova.associative.UserNameProvider;
 import com.egova.model.BaseEntity;
 import com.egova.model.annotation.Display;
 import com.egova.security.UserContext;
@@ -40,12 +39,12 @@ public class Trends extends BaseEntity {
 
     @Display("项目id")
     @Column(name = "projectId")
-    @Associative(name = "projectName",providerClass = ProjectNameProvider.class)
+//    @Associative(name = "projectName",providerClass = ProjectNameProvider.class)
     private String projectId;
 
     @Display("api分组")
     @Column(name = "categoryId")
-    @Associative(name = "categoryName",providerClass = CategoryNameProvider.class)
+//    @Associative(name = "categoryName",providerClass = CategoryNameProvider.class)
     private String categoryId;
 
     @Display("apiId")
@@ -54,6 +53,7 @@ public class Trends extends BaseEntity {
 
     @Display("创建人")
     @Column(name = "creator")
+    @Associative(name = "creatorName",providerClass = UserNameProvider.class)
     private String creator;
 
     @Display("创建时间")
@@ -62,13 +62,17 @@ public class Trends extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Timestamp createTime;
 
-//    @Display("项目名称")
-//    @Column(name = "projectName")
-//    private String projectName;
+    @Display("项目名称")
+    @Column(name = "projectName")
+    private String projectName;
 
     @Display("api名称")
     @Column(name = "apiName")
     private String apiName;
+
+    @Display("项目名称")
+    @Column(name = "categoryName")
+    private String categoryName;
 
     @Display("类型")
     @Column(name = "type")
@@ -78,9 +82,11 @@ public class Trends extends BaseEntity {
     @Column(name = "operateType")
     private OperateType operateType;
 
-    public Trends(String projectId, String categoryId, String apiId, String apiName,TrendsType type, OperateType operateType) {
+    public Trends(String projectId, String projectName, String categoryId, String categoryName, String apiId, String apiName,TrendsType type, OperateType operateType) {
         this.projectId = projectId;
+        this.projectName = projectName;
         this.categoryId = categoryId;
+        this.categoryName = categoryName;
         this.apiId = apiId;
         this.apiName = apiName;
         this.type = type;

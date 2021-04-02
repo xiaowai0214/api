@@ -219,5 +219,27 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="20210401-1" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="projectName" tableName="api_trends" />
+            </not>
+        </preConditions>
+        <addColumn tableName="api_trends">
+            <column name="projectName" remarks="项目名称" type="VARCHAR(100)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20210401-2" author="huangkang">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="categoryName" tableName="api_trends" />
+            </not>
+        </preConditions>
+        <addColumn tableName="api_trends">
+            <column name="categoryName" remarks="分组名称" type="VARCHAR(100)"/>
+        </addColumn>
+    </changeSet>
+
 
 </databaseChangeLog>

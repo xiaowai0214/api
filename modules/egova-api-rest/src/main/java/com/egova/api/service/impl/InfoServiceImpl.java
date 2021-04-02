@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 public class InfoServiceImpl extends TemplateService<Info, String> implements InfoService {
     private static final String CATEGORY_TYPE = "api";
 
+    private final ProjectRepository projectRepository;
+    private final CategoryRepository categoryRepository;
     private final InfoRepository infoRepository;
     private final AuthenticationRepository authenticationRepository;
     private final EventScriptRepository eventScriptRepository;
@@ -73,23 +75,28 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
     public String insert(Info entity) {
         entity.setCreator(UserContext.username());
         entity.setCreateTime(new Timestamp(System.currentTimeMillis()));
-
         String insert = super.insert(entity);
-        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), insert, entity.getName(), TrendsType.APi, OperateType.Insert));
+        Project project = projectRepository.getById(entity.getProjectId());
+        Category category = categoryRepository.getById(entity.getCategoryId());
+        trendsFacade.insert(new Trends(entity.getProjectId(),project.getName() == null ? null : project.getName(), entity.getCategoryId(),category.getName() == null ? null : category.getName(),  insert, entity.getName(), TrendsType.APi, OperateType.Insert));
         return insert;
     }
 
     @Override
     public void update(Info entity) {
         super.update(entity);
-        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Update));
+        Project project = projectRepository.getById(entity.getProjectId());
+        Category category = categoryRepository.getById(entity.getCategoryId());
+        trendsFacade.insert(new Trends(entity.getProjectId(), project.getName() == null ? null : project.getName() , entity.getCategoryId(),category.getName() == null ? null : category.getName() , entity.getId(), entity.getName(), TrendsType.APi, OperateType.Update));
     }
 
     @Override
     public void modify(String id, HashMap<String, Object> map) {
         super.modify(map, SingleClause.equal("id", id));
         Info entity = infoRepository.getById(id);
-        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Update));
+        Project project = projectRepository.getById(entity.getProjectId());
+        Category category = categoryRepository.getById(entity.getCategoryId());
+        trendsFacade.insert(new Trends(entity.getProjectId(),project.getName() == null ? null : project.getName() , entity.getCategoryId(), category.getName() == null ? null : category.getName() , entity.getId(), entity.getName(), TrendsType.APi, OperateType.Update));
     }
 
     @Override
@@ -102,7 +109,9 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         convertConfigRepository.delete(SingleClause.equal("apiId",id));
         fieldMappingRepository.delete(SingleClause.equal("apiId",id));
         clearInfoCache();
-        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getCategoryId(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Delete));
+        Project project = projectRepository.getById(entity.getProjectId());
+        Category category = categoryRepository.getById(entity.getCategoryId());
+        trendsFacade.insert(new Trends(entity.getProjectId(), project.getName() == null ? null : project.getName() ,entity.getCategoryId(),category.getName() == null ? null : category.getName(), entity.getId(), entity.getName(), TrendsType.APi, OperateType.Delete));
         return 1;
     }
 
@@ -156,7 +165,10 @@ public class InfoServiceImpl extends TemplateService<Info, String> implements In
         //6.转换字段映射
         saveFieldMapping(apiInfoModel);
 
-        trendsFacade.insert(new Trends(apiInfoModel.getInfo().getProjectId(), apiInfoModel.getInfo().getCategoryId(), apiInfoModel.getInfo().getId(), apiInfoModel.getInfo().getName(), TrendsType.APi, OperateType.Update));
+        Info info = Optional.ofNullable(infoRepository.getById(apiInfoModel.getInfo().getId())).orElseThrow(() -> ExceptionUtils.api("api为空"));
+        Project project = projectRepository.getById(info.getProjectId());
+        Category category = categoryRepository.getById(info.getCategoryId());
+        trendsFacade.insert(new Trends(apiInfoModel.getInfo().getProjectId(),project.getName() == null ? null : project.getName(), apiInfoModel.getInfo().getCategoryId(),category.getName() == null ? null : category.getName(), apiInfoModel.getInfo().getId(), apiInfoModel.getInfo().getName(), TrendsType.APi, OperateType.Update));
     }
 
     private void saveConvertConfig(ApiInfoModel model) {

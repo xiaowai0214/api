@@ -6,6 +6,7 @@ import com.egova.api.condition.CategoryCondition;
 import com.egova.api.domain.*;
 import com.egova.api.entity.Category;
 import com.egova.api.entity.Info;
+import com.egova.api.entity.Project;
 import com.egova.api.entity.Trends;
 import com.egova.api.enums.OperateType;
 import com.egova.api.enums.TrendsType;
@@ -43,6 +44,7 @@ import java.util.stream.Stream;
 public class CategoryServiceImpl extends TemplateService<Category, String> implements CategoryService {
 
 
+    private final ProjectRepository projectRepository;
     private final CategoryRepository repository;
     private final InfoRepository infoRepository;
     private final EventScriptRepository eventScriptRepository;
@@ -87,7 +89,8 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
     @Override
     public int deleteById(String id) {
         Category category = Optional.ofNullable(repository.getById(id)).orElseThrow(()-> ExceptionUtils.api("该目录不存在"));
-        trendsFacade.insert(new Trends(category.getProjectId(), category.getId(), "", "", TrendsType.APi_Category, OperateType.Delete));
+        Project project = projectRepository.getById(category.getProjectId());
+        trendsFacade.insert(new Trends(category.getProjectId(), project == null ? null : project.getName() ,category.getId(), category.getName(), "", "", TrendsType.APi_Category, OperateType.Delete));
         return this.deleteByIds(id);
     }
 
@@ -168,7 +171,8 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
         } else {
             entity.setSort(0);
         }
-        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getId(), "", "", TrendsType.APi_Category, OperateType.Insert));
+        Project project = projectRepository.getById(entity.getProjectId());
+        trendsFacade.insert(new Trends(entity.getProjectId(), project == null ? null:project.getName() ,entity.getId(), entity.getName(),"", "", TrendsType.APi_Category, OperateType.Insert));
         return super.insert(entity);
     }
 
@@ -202,7 +206,8 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
     @Override
     public void update(Category entity) {
         this.check(entity);
-        trendsFacade.insert(new Trends(entity.getProjectId(), entity.getId(), "", "", TrendsType.APi_Category, OperateType.Update));
+        Project project = projectRepository.getById(entity.getProjectId());
+        trendsFacade.insert(new Trends(entity.getProjectId(), project == null ? null : project.getName() ,entity.getId(),"", "", "", TrendsType.APi_Category, OperateType.Update));
         super.update(entity);
     }
 

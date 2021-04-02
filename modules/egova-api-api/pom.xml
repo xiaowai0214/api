@@ -27,6 +27,11 @@
             <artifactId>egova-generic-api</artifactId>
             <version>${egova.base.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.egova</groupId>
+            <artifactId>egova-security-api</artifactId>
+            <version>${egova.base.version}</version>
+        </dependency>
 
     </dependencies>
 

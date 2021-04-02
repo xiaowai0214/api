@@ -11,6 +11,7 @@ import com.egova.api.facade.TrendsFacade;
 import com.egova.api.service.ProjectService;
 import com.egova.data.service.AbstractRepositoryBase;
 import com.egova.data.service.TemplateService;
+import com.egova.exception.ExceptionUtils;
 import com.egova.model.PageResult;
 import com.egova.model.QueryModel;
 import com.egova.security.UserContext;
@@ -24,6 +25,7 @@ import javax.annotation.Priority;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * created by huangkang
@@ -61,7 +63,7 @@ public class ProjectServiceImpl extends TemplateService<Project, String> impleme
     @Override
     public void update(Project entity) {
         super.update(entity);
-        trendsFacade.insert(new Trends(entity.getId(),"","", "",  TrendsType.Project, OperateType.Update));
+        trendsFacade.insert(new Trends(entity.getId(),entity.getName(),"","","", "",  TrendsType.Project, OperateType.Update));
         ProjectIntro.of(entity.getId()).invalid();
     }
 
@@ -70,14 +72,15 @@ public class ProjectServiceImpl extends TemplateService<Project, String> impleme
         entity.setCreator(UserContext.username());
         entity.setCreateTime(new Timestamp(System.currentTimeMillis()));
         String insert = super.insert(entity);
-        trendsFacade.insert(new Trends(insert,"","", "",  TrendsType.Project, OperateType.Insert));
+        trendsFacade.insert(new Trends(insert,entity.getName(),"","","", "",  TrendsType.Project, OperateType.Insert));
         return insert;
     }
 
     @Override
     public int deleteById(String s) {
+        Project project = Optional.ofNullable(projectRepository.getById(s)).orElseThrow(() -> ExceptionUtils.api("项目不存在"));
         super.deleteById(s);
-        trendsFacade.insert(new Trends(s,"","", "",  TrendsType.Project, OperateType.Delete));
+        trendsFacade.insert(new Trends(s,project.getName(),"","","", "",  TrendsType.Project, OperateType.Delete));
         return 1;
     }
 
