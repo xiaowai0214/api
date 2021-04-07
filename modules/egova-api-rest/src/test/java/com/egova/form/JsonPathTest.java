@@ -286,15 +286,29 @@ public class JsonPathTest {
 
         Map<String,Object> map2 = new HashMap<>();
         String path = "{\n" +
-                "  \"condition\":{\n" +
-                "      \n" +
-                "  },\n" +
-                "  \"paging\":{\n" +
-                "      \"pageIndex\":1,\n" +
-                "      \"pageSize\":3\n" +
-                "  }\n" +
+                "    \"hasError\": false,\n" +
+                "    \"result\": [\n" +
+                "        {\n" +
+                "            \"content\": \"{}\",\n" +
+                "            \"experimentId\": \"1234\",\n" +
+                "            \"id\": \"9a6050a9-905b-45a1-9a54-fc8cb0001ccf\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"content\": \"{}\",\n" +
+                "            \"experimentId\": \"1234\",\n" +
+                "            \"id\": \"eab620d4-9b0c-4842-b8a9-e290a856cc41\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"message\": null,\n" +
+                "    \"tag\": null,\n" +
+                "    \"totalCount\": 2\n" +
                 "}";
         List<String> list = JsonPathUtils.getListJsonPathByJsonString(path);
+
+        List<String> distinctPaths = JsonPathUtils.distinctPath(list);
+
+        distinctPaths.forEach(p-> System.out.println(p));
+
 
         List<RequestParam> requestParams = new ArrayList<>();
 

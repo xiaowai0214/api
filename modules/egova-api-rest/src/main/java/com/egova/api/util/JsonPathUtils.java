@@ -37,6 +37,7 @@ public class JsonPathUtils {
 
         List<String> jsonPaths= JSONPathEnhanced.paths(jsonObject).keySet().stream().collect(Collectors.toList());
         List<String> parentNode=new ArrayList<>();
+        Set<String> invalidNode=new HashSet<>();
         //根节点
         parentNode.add("/");
         for(int i=1;i<jsonPaths.size();i++){
@@ -58,11 +59,17 @@ public class JsonPathUtils {
             for(int j=tempjsonPath.length();--j>=0;){
 
                 if(Character.isDigit(tempjsonPath.charAt(j))){
+                    invalidNode.add(tempjsonPath.substring(0,j-1));
                     //将0.1.2.3.4 替换为[1] [2] [3] [4]
                     tempjsonPath=  tempjsonPath.replaceAll("/"+ tempjsonPath.charAt(j),"["+tempjsonPath.charAt(j)+"]");
                 }
             }
             jsonPathList.add(tempjsonPath.replaceFirst("/", "").replaceAll("/", "."));
+        }
+
+        //删除因数组引入的多余path
+        for(String p:invalidNode){
+            jsonPathList.remove(p);
         }
         return jsonPathList;
     }
@@ -316,33 +323,80 @@ public class JsonPathUtils {
 
     public static void main(String[] args) {
         String params = "{\n" +
-                "    \"username\":\"admin\",\n" +
-                "    \"password\":\"123456\",\n" +
-                "    \"grant_type\":\"password\",\n" +
-                "    \"client_id\":\"unity-client\",\n" +
-                "    \"client_secret\":\"unity\",\n" +
-                "    \"person\":{\n" +
-                "        \"sex\":\"1\",\n" +
-                "        \"age\":12,\n" +
-                "        \"department\":{\n" +
-                "            \"id\":\"123\",\n" +
-                "            \"name\":\"智能产品bu\"\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"roles\":[\n" +
+                "    \"hasError\":false,\n" +
+                "    \"result\":[\n" +
                 "        {\n" +
-                "            \"id\":\"123\",\n" +
-                "            \"name\":\"java\"\n" +
+                "            \"id\":\"0adcfa18-22c9-4f9e-8910-a58184083e3a\",\n" +
+                "            \"scheduleId\":\"d7fc99a7-54d9-4983-92e2-a8f73002566a\",\n" +
+                "            \"jobId\":\"7a9ac918-dafc-4071-8590-45bb99e75a92\",\n" +
+                "            \"logType\":\"SCHEDULE\",\n" +
+                "            \"status\":\"SUCCESS\",\n" +
+                "            \"executorEndpoint\":\"192.168.101.22:8014\",\n" +
+                "            \"creator\":\"admin\",\n" +
+                "            \"modifier\":\"admin\",\n" +
+                "            \"createTime\":\"2021-03-18 11:21:00\",\n" +
+                "            \"modifyTime\":\"2021-03-18 11:21:13\",\n" +
+                "            \"lastValue\":\"2021-03-18 11:18:00\",\n" +
+                "            \"currentValue\":\"2021-03-18 11:21:00\",\n" +
+                "            \"totalReadRecords\":0,\n" +
+                "            \"totalDirtyRecords\":0,\n" +
+                "            \"totalFilterRecords\":0,\n" +
+                "            \"totalWriteRecords\":0,\n" +
+                "            \"scheduleName\":\"人员信息接入调度\",\n" +
+                "            \"jobName\":\"人员信息接入[kafka]\",\n" +
+                "            \"_logType\":{\n" +
+                "                \"name\":\"SCHEDULE\",\n" +
+                "                \"text\":\"调度\",\n" +
+                "                \"value\":\"0\"\n" +
+                "            },\n" +
+                "            \"_status\":{\n" +
+                "                \"name\":\"SUCCESS\",\n" +
+                "                \"text\":\"成功\",\n" +
+                "                \"value\":\"1\"\n" +
+                "            }\n" +
                 "        },\n" +
                 "        {\n" +
-                "            \"id\":\"234\",\n" +
-                "            \"name\":\"打工人\"\n" +
+                "            \"id\":\"fb6a6be8-2db7-459f-aae2-02f012e86951\",\n" +
+                "            \"scheduleId\":\"d7fc99a7-54d9-4983-92e2-a8f73002566a\",\n" +
+                "            \"jobId\":\"7a9ac918-dafc-4071-8590-45bb99e75a92\",\n" +
+                "            \"logType\":\"SCHEDULE\",\n" +
+                "            \"status\":\"SUCCESS\",\n" +
+                "            \"executorEndpoint\":\"192.168.101.22:8014\",\n" +
+                "            \"creator\":\"admin\",\n" +
+                "            \"modifier\":\"admin\",\n" +
+                "            \"createTime\":\"2021-03-18 11:24:00\",\n" +
+                "            \"modifyTime\":\"2021-03-18 11:24:13\",\n" +
+                "            \"lastValue\":\"2021-03-18 11:21:00\",\n" +
+                "            \"currentValue\":\"2021-03-18 11:24:00\",\n" +
+                "            \"totalReadRecords\":0,\n" +
+                "            \"totalDirtyRecords\":0,\n" +
+                "            \"totalFilterRecords\":0,\n" +
+                "            \"totalWriteRecords\":0,\n" +
+                "            \"scheduleName\":\"人员信息接入调度\",\n" +
+                "            \"jobName\":\"人员信息接入[kafka]\",\n" +
+                "            \"_logType\":{\n" +
+                "                \"name\":\"SCHEDULE\",\n" +
+                "                \"text\":\"调度\",\n" +
+                "                \"value\":\"0\"\n" +
+                "            },\n" +
+                "            \"_status\":{\n" +
+                "                \"name\":\"SUCCESS\",\n" +
+                "                \"text\":\"成功\",\n" +
+                "                \"value\":\"1\"\n" +
+                "            }\n" +
                 "        }\n" +
-                "    ]\n" +
+                "    ],\n" +
+                "    \"message\":null,\n" +
+                "    \"tag\":null,\n" +
+                "    \"totalCount\":20\n" +
                 "}";
         JSONObject jsonObject = JSONObject.parseObject(params);
         List<String> listJsonPath = getListJsonPath(jsonObject);
         listJsonPath.forEach(path->System.out.println(path));
+        Map<String, Object> map = new HashMap<>();
+        listJsonPath.forEach(path->map.put(path, readjson(params,path)));
+        String json = warpJson(map);
+        System.out.println(json);
     }
 
 }
