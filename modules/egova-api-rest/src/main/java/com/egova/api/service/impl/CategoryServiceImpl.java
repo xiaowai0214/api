@@ -119,12 +119,14 @@ public class CategoryServiceImpl extends TemplateService<Category, String> imple
 
     public void clearCategoryCache() {
         cache.invalidateAll();
+        repository.clearCache();
         infoRepository.clearCache();
         requestHeaderRepository.clearCache();
         requestParamRepository.clearCache();
         eventScriptRepository.clearCache();
         convertConfigRepository.clearCache();
         fieldMappingRepository.clearCache();
+        clearCache();
     }
 
     @Override
